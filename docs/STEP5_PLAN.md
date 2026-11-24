@@ -3,7 +3,7 @@
 - 工程：STEP 5 — 実装（準備）
 - 版：v1.0（2026-11-24）
 - 状態：**PR-0〜PR-6（資料の配置・初期化・PoC-02・PoC-01）の着手を利用者が承認（2026-11-24）。PR-7以降はPoC結果の報告後に改めて承認を受ける。**
-- 正本：`PRODUCT_BRIEF.md` v1.2、`REQUIREMENTS.md` v2.2、`ACCEPTANCE_CRITERIA.md` v2.2、`ARCHITECTURE.md` v0.9.2、`TECHNICAL_VALIDATION.md` v0.9.2、`DEVELOPMENT_GUIDELINES.md` v0.9.2、`UI_DESIGN.md` v1.0.2、`tokens.css`
+- 正本：`PRODUCT_BRIEF.md` v1.2、`REQUIREMENTS.md` v2.2、`ACCEPTANCE_CRITERIA.md` v2.2、`ARCHITECTURE.md` v0.9.2、`TECHNICAL_VALIDATION.md` v0.9.2、`DEVELOPMENT_GUIDELINES.md` v0.9.3、`UI_DESIGN.md` v1.0.2、`tokens.css`
 
 > 本書はSTEP 5準備の計画レビュー（第1〜5章を章ごとに確認）で決めた事項の記録である。要件・受け入れ条件を変更しない。要件と食い違う場合は要件を優先する。
 
@@ -54,7 +54,7 @@ PR-0 資料の配置 → PR-1 初期化とCI → PR-2 Emulator基盤 → PR-3 Do
 
 ### 5.2 最初のPoCの構成
 
-- Emulatorは`demo-`で始まるプロジェクトIDで起動し、アプリの接続先をEmulatorに固定する（`demo-`の扱いは着手時に公式で確認する）。firebase-toolsはdevDependencyとし、パッケージ管理はnpm。
+- Emulatorは`demo-`で始まるプロジェクトIDで起動し、アプリの接続先をEmulatorに固定する（`demo-`の扱いは着手時に公式で確認する）。firebase-toolsはdevDependencyとし、パッケージ管理はpnpm（2026-11-24変更、DEVELOPMENT_GUIDELINES v0.9.3）。
 - 段階1（Node + Vitest + `@firebase/rules-unit-testing` + Web SDK）：Rulesの許可・拒否、トランザクション、同時操作の競合（100回以上）。
 - 段階2（Playwright Chromium・WebKit + 永続キャッシュ）：オフライン → 再読み込み → 相手の終了・削除 → 復帰（P01-04・07・08）。WebKitはiOS Safariと同一ではないため、ここだけでPASSにしない。
 - 順序：PoC-02（P02-01〜07・09）→ PoC-01段階1（P01-01〜03・05・06・09〜12）→ PoC-01段階2（P01-04・07・08）。

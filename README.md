@@ -11,7 +11,7 @@
 | `docs/ACCEPTANCE_CRITERIA.md` v2.2      | 受け入れ条件（AC-01〜25、AC-N01〜N07）                                               | 同上                              |
 | `docs/ARCHITECTURE.md` v0.9.2           | アーキテクチャ                                                                       | 条件付き承認                      |
 | `docs/TECHNICAL_VALIDATION.md` v0.9.2   | 技術検証計画（PoC-01〜05、すべて未実施）                                             | 条件付き承認                      |
-| `docs/DEVELOPMENT_GUIDELINES.md` v0.9.2 | 開発ガイドライン                                                                     | 条件付き承認                      |
+| `docs/DEVELOPMENT_GUIDELINES.md` v0.9.3 | 開発ガイドライン                                                                     | 条件付き承認                      |
 | `docs/UI_DESIGN.md` v1.0.2              | UI/UX設計                                                                            | STEP 4 承認済み                   |
 | `docs/CHANGE_REQUESTS_STEP2.md`         | 変更管理（CM）の一覧                                                                 | —                                 |
 | `docs/STEP5_PLAN.md`                    | STEP 5準備の計画と決定事項                                                           | PR-0〜PR-6の着手を承認済み        |
@@ -23,19 +23,19 @@
 
 ## 開発
 
-Node.js 26（`.nvmrc`）と npm を使う。
+Node.js 26（`.nvmrc`）と pnpm 12（`package.json` の `packageManager`）を使う。
 
 ```sh
-npm ci            # 依存関係のインストール（package-lock.json どおり）
-npm run dev       # 開発サーバー
-npm run check     # CI と同じ検査（lint・format・型・stylelint・テスト・ビルド）
+pnpm install --frozen-lockfile  # 依存関係のインストール（pnpm-lock.yaml どおり）
+pnpm run dev                    # 開発サーバー
+pnpm run check                  # CI と同じ検査（lint・format・型・stylelint・テスト・ビルド）
 ```
 
-| コマンド               | 内容                                                 |
-| ---------------------- | ---------------------------------------------------- |
-| `npm run lint`         | ESLint                                               |
-| `npm run format:check` | Prettier の確認（`npm run format` で整形）           |
-| `npm run typecheck`    | vue-tsc による型チェック                             |
-| `npm run lint:style`   | stylelint（`tokens.css` 以外での色の直接指定を禁止） |
-| `npm run test`         | Vitest                                               |
-| `npm run build`        | 型チェックとビルド                                   |
+| コマンド                | 内容                                                 |
+| ----------------------- | ---------------------------------------------------- |
+| `pnpm run lint`         | ESLint                                               |
+| `pnpm run format:check` | Prettier の確認（`pnpm run format` で整形）          |
+| `pnpm run typecheck`    | vue-tsc による型チェック                             |
+| `pnpm run lint:style`   | stylelint（`tokens.css` 以外での色の直接指定を禁止） |
+| `pnpm run test`         | Vitest                                               |
+| `pnpm run build`        | 型チェックとビルド                                   |

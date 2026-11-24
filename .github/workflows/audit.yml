@@ -1,0 +1,31 @@
+name: 依存関係の脆弱性
+
+# pnpm 12 の lockfile は GitHub の依存関係グラフで読めず、Dependabot のセキュリティアラートが出ない。
+# その代わりに、PR ごとと毎週の定期実行で pnpm audit を行う。
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 0 * * 1' # 毎週月曜 9:00（日本時間）
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: 依存関係の脆弱性（pnpm audit）
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/setup@731dfb6463bbd11c11fd0ee11fe00ed0e36d48a1 # v3.2.0
+        with:
+          install: false
+      # アプリに含まれる依存関係は、深刻度を問わずすべて不合格にする
+      - run: pnpm audit --prod
+      # 開発用を含む全体は、深刻度 high 以上で不合格にする
+      - run: pnpm audit --audit-level=high
