@@ -1,0 +1,1346 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>買い物リスト プロトタイプ</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&amp;family=Zen+Maru+Gothic:wght@700&amp;display=swap" rel="stylesheet">
+<style>
+:root{--font-round:"Zen Maru Gothic","Hiragino Maru Gothic ProN",var(--font-fallback,system-ui),sans-serif;--ink:#18201C;--ink-2:#544E47;--done:#1E6B47;--disabled:#E8E4DB;--muted:#EFEBE3;--separator:#E3DED4;--danger:#B3261E;--border-strong:#78716A;--on-disabled:#655F55;--offline:#2B3A33;--border-soft:#D3CDC1;--done-soft:#E3F0E8;--on-done-soft:#123D29;--danger-soft:#FCE8E6;--bg:#F8F6F1;--pending-soft:#FFF1D6;--on-danger-soft:#6E1712;--done-pressed:#174F35;--on-pending:#4D3100;--faint:#B3ACA0;--done-row:#F3F0E9;--pending-badge:#6B4400;--danger-badge:#8F1D16;--partner-soft:#F3E6D3;--on-partner-soft:#5A3E14;--danger-line:#F2C9C5;--me-soft:#DCE9F7;--on-me-soft:#123A63;--pressed:#DDD7CB;--canvas:#EEEBE4;--surface:#FFFFFF;--black:#000000;}
+
+body{margin:0}
+a{color:var(--done)}a:hover{color:var(--done-pressed)}
+.phone{width:390px;height:844px;flex:none;background:var(--bg);border-radius:36px;position:relative;overflow:hidden;box-shadow:0 0 0 1px var(--border-soft),0 12px 32px rgba(24,32,28,.12);display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:4px;padding:20px 8px 4px;min-height:56px}
+.top .tt{flex:1;min-width:0;display:flex;flex-direction:column}
+.top .tt b{font-size:21px;line-height:28px}
+.top .tt span{font-size:14px;line-height:20px;color:var(--ink-2)}
+.scroll{flex:1;overflow-y:auto;padding:0 16px 16px}
+.h-title{font-size:28px;line-height:36px;font-weight:700;margin:28px 4px 12px}
+.iconbtn{width:48px;height:48px;flex:none;border:0;background:transparent;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer}
+.iconbtn:active{background:var(--done-soft)}
+.seg{display:flex;background:var(--muted);border-radius:12px;padding:4px;gap:4px;margin:4px 0 12px}
+.seg button{flex:1;min-height:44px;border:0;border-radius:9px;background:transparent;font:inherit;font-size:15px;font-weight:700;color:var(--ink-2);cursor:pointer}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(24,32,28,.18)}
+.card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--separator);border-radius:16px;padding:14px 16px;margin-bottom:8px;font:inherit;color:inherit;cursor:pointer;min-height:76px;box-sizing:border-box}
+.card .t{font-size:18px;font-weight:700;line-height:26px}
+.card .s{font-size:15px;color:var(--ink-2);line-height:22px}
+.btn{min-height:52px;border-radius:12px;font:inherit;font-size:17px;font-weight:700;border:0;cursor:pointer;padding:0 20px;width:100%;box-sizing:border-box}
+.btn.pri{background:var(--done);color:var(--surface)}
+.btn.pri:active{background:var(--done-pressed)}
+.btn.pri:disabled{background:var(--disabled);color:var(--on-disabled);cursor:default}
+.btn.sec{background:var(--surface);color:var(--done);border:1.5px solid var(--done)}
+.btn.dan{background:var(--danger);color:var(--surface)}
+.btn.ghost{background:transparent;color:var(--done)}
+.bottom{padding:12px 16px 20px;background:var(--bg);border-top:1px solid var(--separator)}
+.note{font-size:13px;line-height:19px;color:var(--ink-2);margin-top:8px;text-align:center}
+.secthead{font-size:15px;font-weight:700;color:var(--ink-2);margin:20px 4px 8px}
+.row{display:flex;align-items:center;background:var(--surface);border-radius:14px;margin-bottom:6px;min-height:64px;padding-left:2px;border:1px solid var(--disabled)}
+.row.done{background:var(--done-row)}
+.check{width:56px;height:60px;flex:none;border:0;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:12px}
+.check:disabled{cursor:default}
+.box{width:30px;height:30px;border-radius:50%;border:2px solid var(--border-strong);display:flex;align-items:center;justify-content:center;box-sizing:border-box;background:var(--surface)}
+.check.on .box,.sbox.on{background:var(--done);border-color:var(--done)}
+.rowbody{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px 10px 2px;border:0;background:transparent;text-align:left;font:inherit;color:inherit;cursor:pointer;min-height:64px;justify-content:center}
+.iname{font-size:18px;font-weight:700;line-height:25px;word-break:break-word}
+.iname.done{color:var(--ink-2);font-weight:500}
+.meta{font-size:15px;color:var(--ink-2);line-height:21px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.qtypill{flex:none;margin-right:12px;min-width:52px;text-align:center;padding:4px 10px;border-radius:999px;background:var(--done-soft);color:var(--on-done-soft);font-size:20px;line-height:28px;font-weight:700;font-variant-numeric:tabular-nums;box-sizing:border-box}
+.row.done .qtypill{background:var(--disabled);color:var(--offline);font-size:17px;line-height:24px}
+.badge{font-size:13px;font-weight:700;padding:1px 8px;border-radius:999px;line-height:19px}
+.badge.pend{background:var(--pending-soft);color:var(--pending-badge)}
+.badge.fail{background:var(--danger-soft);color:var(--danger-badge)}
+.badge.neu{background:var(--muted);color:var(--offline)}
+.banner{border-radius:12px;padding:12px 14px;margin-bottom:10px;font-size:15px;line-height:22px}
+.banner b{display:block;font-size:16px;line-height:24px}
+.banner.off{background:var(--offline);color:var(--surface)}
+.banner.pend{background:var(--pending-soft);color:var(--on-pending)}
+.banner.err{background:var(--danger-soft);color:var(--on-danger-soft)}
+.banner.info{background:var(--muted);color:var(--ink)}
+.act{margin-top:8px;min-height:44px;padding:0 14px;border-radius:10px;border:1.5px solid currentColor;background:transparent;font:inherit;font-size:15px;font-weight:700;color:inherit;cursor:pointer}
+.tabbar{display:flex;border-top:1px solid var(--separator);background:var(--surface);padding:4px 8px 14px}
+.tabbar button{flex:1;min-height:56px;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:inherit;font-size:12px;font-weight:700;color:var(--on-disabled);cursor:pointer}
+.tabbar button.on{color:var(--done)}
+.scrim{position:absolute;inset:0;background:rgba(24,32,28,.45);display:flex;flex-direction:column;justify-content:flex-end;z-index:10}
+.sheet{background:var(--surface);border-radius:20px 20px 0 0;padding:8px 16px 20px;max-height:86%;overflow-y:auto;box-sizing:border-box}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--border-soft);margin:4px auto 6px}
+.sheethead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sheethead h2{font-size:20px;line-height:28px;margin:0}
+.field{display:flex;flex-direction:column;gap:6px;margin:14px 0}
+.lbl{font-size:15px;font-weight:700}
+.input{min-height:52px;border:1.5px solid var(--border-strong);border-radius:12px;padding:0 14px;font:inherit;font-size:17px;background:var(--surface);color:var(--ink);box-sizing:border-box;width:100%}
+.input:focus{outline:2px solid var(--done);outline-offset:2px}
+.hint{font-size:14px;line-height:21px;background:var(--done-soft);color:var(--on-done-soft);border-radius:10px;padding:10px 12px}
+.err{font-size:14px;line-height:21px;background:var(--danger-soft);color:var(--on-danger-soft);border-radius:10px;padding:10px 12px}
+.stepper{display:flex;align-items:center;border:1.5px solid var(--border-strong);border-radius:12px;width:max-content;background:var(--surface)}
+.stepper button{width:52px;height:48px;border:0;background:transparent;font:inherit;font-size:24px;color:var(--done);cursor:pointer;font-weight:700}
+.stepper button:disabled{color:var(--faint);cursor:default}
+.stepper span{min-width:52px;text-align:center;font-size:18px;font-weight:700}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid var(--border-strong);background:var(--surface);font:inherit;font-size:16px;font-weight:700;color:var(--ink);cursor:pointer}
+.chip.on{background:var(--done);border-color:var(--done);color:var(--surface)}
+.menuitem{display:flex;flex-direction:column;align-items:flex-start;width:100%;min-height:60px;border:0;background:transparent;text-align:left;font:inherit;font-size:17px;font-weight:700;color:var(--ink);padding:10px 4px;border-bottom:1px solid var(--disabled);cursor:pointer;justify-content:center;gap:2px}
+.menuitem small{font-size:14px;font-weight:400;color:var(--ink-2);line-height:20px}
+.menuitem:disabled{color:var(--border-strong);cursor:default}
+.dialogwrap{position:absolute;inset:0;background:rgba(24,32,28,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:11}
+.dialog{background:var(--surface);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.dialog h2{margin:0;font-size:20px;line-height:28px}
+.dialog p{margin:0;font-size:16px;line-height:25px}
+.toast{position:absolute;left:16px;right:16px;bottom:104px;background:var(--ink);color:var(--surface);border-radius:12px;padding:12px 16px;font-size:15px;line-height:22px;z-index:20}
+.srow{border-bottom:1px solid var(--disabled);padding:4px 0}
+.srow-main{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;border:0;background:transparent;text-align:left;font:inherit;color:inherit;cursor:pointer;padding:4px}
+.sbox{width:26px;height:26px;flex:none;border-radius:7px;border:2px solid var(--border-strong);display:flex;align-items:center;justify-content:center;box-sizing:border-box}
+.srow-opts{display:flex;flex-wrap:wrap;gap:10px;padding:4px 4px 12px 42px;align-items:center}
+.group{background:var(--surface);border:1px solid var(--separator);border-radius:16px;overflow:hidden;margin-bottom:16px}
+.grow{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:56px;border:0;border-bottom:1px solid var(--disabled);background:transparent;text-align:left;font:inherit;font-size:17px;color:var(--ink);padding:0 16px;cursor:pointer}
+.grow:last-child{border-bottom:0}
+.grow span{color:var(--ink-2);font-size:15px}
+.empty{text-align:center;padding:28px 16px;color:var(--ink-2);font-size:15px;line-height:23px}
+.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
+.bar{height:8px;border-radius:999px;background:var(--disabled);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--done);border-radius:999px;transition:width .3s ease}
+.remain{display:flex;flex-direction:column;align-items:center;flex:none;min-width:44px}
+.remain small{font-size:12px;line-height:16px;color:var(--ink-2);font-weight:700}
+.remain b{font-size:26px;line-height:30px;font-variant-numeric:tabular-nums}
+.prog{display:flex;flex-direction:column;gap:6px;margin:0 2px 14px}
+.prog .pt{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;font-weight:700;color:var(--ink-2)}
+.prog .pt b{font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums}
+.av{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none}
+.av.me{background:var(--done-soft);color:var(--on-done-soft)}
+.av.mom{background:var(--partner-soft);color:var(--on-partner-soft)}
+.who{display:inline-flex;align-items:center;gap:6px}
+.donecard{background:var(--done-soft);color:var(--on-done-soft);border-radius:16px;padding:20px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:8px;font-size:15px;line-height:23px}
+.donecard b{font-size:18px;line-height:26px}
+.donecard .btn{margin-top:8px}
+@keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+.check.on .box{animation:pop .22s ease-out}
+.box{transition:background .15s,border-color .15s}
+@media (prefers-reduced-motion: reduce){.check.on .box{animation:none}.bar span,.box{transition:none}}
+.sb{display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 6px 6px 12px;border-radius:12px;font-size:15px;font-weight:700;margin-bottom:8px;box-sizing:border-box}
+.sb small{display:block;font-size:13px;font-weight:400;line-height:18px}
+.sb.off{background:var(--offline);color:var(--surface)}
+.sb.pend{background:var(--pending-soft);color:var(--on-pending)}
+.sb.err{background:var(--danger-soft);color:var(--on-danger-soft)}
+.sb.info{background:var(--muted);color:var(--offline)}
+.sbact{min-height:40px;padding:0 14px;border-radius:10px;border:0;background:var(--surface);color:inherit;font:inherit;font-size:14px;font-weight:700;cursor:pointer;box-shadow:inset 0 0 0 1.5px currentColor}
+.cnt{background:var(--pending-soft);color:var(--on-pending);border-radius:999px;padding:2px 10px;font-size:13px}
+.prog2{display:flex;align-items:center;gap:12px;margin:0 2px 14px}
+.prog2 .bar{flex:1}
+.prog2 span{font-size:14px;color:var(--ink-2);font-weight:700;font-variant-numeric:tabular-nums}
+.prog2 b{font-size:18px;color:var(--ink)}
+.btn.offl{background:var(--disabled);color:var(--on-disabled)}
+.chip:disabled{cursor:default}
+.menuitem.dim{color:var(--border-strong)}
+.fab{position:absolute;right:16px;bottom:96px;min-height:56px;padding:0 20px 0 16px;border-radius:18px;border:0;background:var(--done);color:var(--surface);font:inherit;font-size:17px;font-weight:700;display:flex;align-items:center;gap:6px;box-shadow:0 4px 14px rgba(24,32,28,.28);cursor:pointer;z-index:5}
+.fab:active{background:var(--done-pressed)}
+.fab.offl{background:var(--disabled);color:var(--on-disabled);box-shadow:0 0 0 1px var(--border-soft)}
+.qa{display:flex;gap:8px;align-items:center;padding:10px 12px 20px;background:var(--surface);border-top:1px solid var(--separator);margin:0}
+.qa input{flex:1;min-width:0;min-height:48px;border:1.5px solid var(--border-strong);border-radius:999px;padding:0 16px;font:inherit;font-size:17px;background:var(--bg);color:var(--ink);box-sizing:border-box}
+.qa input:focus{outline:2px solid var(--done);outline-offset:2px;background:var(--surface)}
+.qa.offl input{background:var(--disabled);border-color:var(--border-soft)}
+.qa .send{width:48px;height:48px;border-radius:50%;border:0;background:var(--done);color:var(--surface);display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer}
+.qa .send:disabled{background:var(--disabled);color:var(--on-disabled);cursor:default}
+.qa .stp{min-height:48px;padding:0 12px;border-radius:999px;border:1.5px solid var(--done);background:var(--surface);color:var(--done);font:inherit;font-size:15px;font-weight:700;display:flex;align-items:center;gap:4px;flex:none;cursor:pointer}
+.qa.offl .stp{border-color:var(--border-soft);color:var(--on-disabled)}
+.qaerr{background:var(--danger-soft);color:var(--on-danger-soft);font-size:14px;font-weight:700;padding:8px 14px;border-top:1px solid var(--danger-line)}
+.demo{flex:1;display:flex;flex-direction:column;gap:10px;font-size:14px;line-height:21px;color:var(--ink)}
+.demo h2{font-size:18px;line-height:26px;margin:0}
+.demo h3{font-size:15px;margin:8px 0 0}
+.dbtn{min-height:44px;border-radius:10px;border:1.5px solid var(--ink-2);background:var(--surface);font:inherit;font-size:14px;font-weight:700;text-align:left;padding:8px 12px;cursor:pointer;color:var(--ink)}
+.dbtn.on{background:var(--offline);color:var(--surface);border-color:var(--offline)}
+.demo ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+/* 高齢の利用者にも読みやすいサイズ（最小15px、商品名20px） */
+.h-title{font-size:30px;line-height:38px;margin:4px 4px 14px}
+.dateline{margin:24px 4px 0;font-size:16px;font-weight:700;color:var(--ink-2)}
+.card .t{font-size:20px;line-height:28px}.card .s{font-size:16px;line-height:24px}
+.seg button{font-size:16px;min-height:48px}
+.iname{font-size:20px;line-height:28px}
+.meta{font-size:16px;line-height:24px}
+.badge{font-size:14px;line-height:20px}
+.secthead{font-size:16px}
+.lbl{font-size:16px}
+.input,.qa input{font-size:18px}
+.chip{font-size:17px;min-height:48px}
+.menuitem{font-size:18px}
+.dialog p{font-size:17px;line-height:27px}
+.toast{font-size:17px;line-height:25px}
+.tabbar button{font-size:14px}
+.note{font-size:15px;line-height:22px}
+.sb{font-size:16px}.sb small{font-size:14px;line-height:20px}
+.cnt{font-size:14px}
+.prog2 span{font-size:15px}.prog2 b{font-size:20px}
+.qa .stp{font-size:16px}
+.qaerr{font-size:15px}
+.remain small{font-size:14px;line-height:18px}.remain b{font-size:28px;line-height:32px}
+.av{width:32px;height:32px;font-size:16px}
+.empty{font-size:16px}.empty b{font-size:18px}
+.grow{font-size:18px}.grow span{font-size:16px}
+.qtypill{font-size:21px}
+.selbar{position:absolute;left:12px;right:12px;bottom:96px;display:flex;align-items:center;gap:12px;background:var(--ink);color:var(--surface);border-radius:16px;padding:8px 8px 8px 16px;font-size:17px;font-weight:700;z-index:5;box-shadow:0 4px 14px rgba(24,32,28,.28)}
+.selbar .btn{width:auto;flex:1}
+/* 色の役割：墨＝押せる・選択、緑＝済んだ・そろった、黄＝未確定、赤＝問題、青／ベージュ＝担当 */
+.btn.pri,.fab,.qa .send{background:var(--ink);color:var(--surface)}
+.btn.pri:active,.fab:active{background:var(--black)}
+.btn.pri.offl,.fab.offl{background:var(--disabled);color:var(--on-disabled)}
+.btn.sec{color:var(--ink);border-color:var(--ink)}
+.btn.ghost{color:var(--ink)}
+.qa .stp{border-color:var(--ink);color:var(--ink)}
+.qa input:focus,.input:focus{outline-color:var(--ink)}
+.chip.on{background:var(--ink);border-color:var(--ink)}
+.stepper button{color:var(--ink)}
+.iconbtn:active{background:var(--muted)}
+.tabbar button.on{color:var(--ink);box-shadow:inset 0 3px 0 var(--ink)}
+.check.sel .box,.sbox.on{background:var(--ink);border-color:var(--ink)}
+.check.on .box{background:var(--done);border-color:var(--done)}
+.hint{background:var(--muted);color:var(--ink)}
+.av.me{background:var(--me-soft);color:var(--on-me-soft)}
+.selbar .btn.pri{background:var(--surface);color:var(--ink)}
+.morebtn{width:48px;height:48px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;padding:0;margin-right:4px}
+.morecirc{width:36px;height:36px;border-radius:50%;background:var(--muted);display:flex;align-items:center;justify-content:center}
+.morebtn:active .morecirc{background:var(--pressed)}
+.endwrap{padding:20px 0 8px}
+.h-title,.top .tt b,.remain b,.qtypill,.prog2 b,.donecard b,.calhead b,.celeb b,.card .t{font-family:var(--font-round);font-weight:700}
+.celeb{background:var(--surface);border-radius:24px;padding:28px 20px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.celeb b{font-size:24px;line-height:32px}
+.celeb .n{font-family:var(--font-round);font-size:44px;line-height:48px;color:var(--done)}
+.celeb p{margin:0;font-size:17px;color:var(--ink-2)}
+.namerow{display:flex;align-items:center;gap:12px;min-height:52px;margin:8px 0 12px;padding:0 4px;border-top:1px solid var(--disabled);border-bottom:1px solid var(--disabled)}
+.namerow .k{font-size:16px;font-weight:700;color:var(--ink-2)}
+.namerow .v{flex:1;min-width:0;font-size:18px;font-weight:700}
+.cal{border:1px solid var(--separator);border-radius:16px;padding:8px;margin-top:8px}
+.calhead{display:flex;align-items:center;justify-content:space-between}
+.calhead b{font-size:18px}
+.calgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+.calgrid span{font-size:14px;font-weight:700;color:var(--ink-2);padding:4px 0}
+.calgrid button{height:44px;border:0;border-radius:12px;background:transparent;font:inherit;font-size:17px;font-weight:700;color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.calgrid button.today{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.calgrid button.on{background:var(--ink);color:var(--surface)}
+.calgrid button.blank{visibility:hidden}
+.calgrid button:disabled{color:var(--faint);cursor:default}
+.icongrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.icongrid button{height:48px;border-radius:12px;border:1.5px solid var(--border-soft);background:var(--surface);color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.icongrid button.on{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.mrow{display:flex;align-items:center;gap:12px;min-height:64px;padding:8px 12px;border-bottom:1px solid var(--disabled)}
+.mrow:last-child{border-bottom:0}
+.mrow .nm{flex:1;min-width:0;font-size:18px;font-weight:700;line-height:24px}
+.mrow .nm small{display:block;font-size:15px;font-weight:400;color:var(--ink-2)}
+.mini{min-height:44px;padding:0 14px;border-radius:10px;border:1.5px solid var(--ink);background:var(--surface);color:var(--ink);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.mini.p{background:var(--ink);color:var(--surface)}
+.mini.d{border-color:var(--danger);color:var(--danger)}
+.spin{width:36px;height:36px;border-radius:50%;border:4px solid var(--separator);border-top-color:var(--ink);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.prose{font-size:17px;line-height:28px;margin:0;padding-left:20px}
+.stile{width:44px;height:44px;border-radius:12px;background:var(--muted);display:flex;align-items:center;justify-content:center;flex:none;color:var(--ink)}
+.top .stile{width:40px;height:40px;margin-right:6px}
+.datebox{width:104px;flex:none;display:flex;align-items:baseline;white-space:nowrap}
+.datebox b{font-size:26px;font-variant-numeric:tabular-nums}
+.datebox span{font-size:16px;color:var(--ink-2);font-weight:700}
+.chip svg{margin-right:6px;vertical-align:-4px}
+.stick{position:sticky;top:0;z-index:3;background:var(--bg);margin:0 -16px;padding:4px 16px 2px}
+.stick .prog2{margin-bottom:10px}
+.endbar{padding:10px 12px 0;background:var(--surface);border-top:1px solid var(--separator)}
+.sug{background:var(--surface);border-top:1px solid var(--separator);padding:2px 12px 10px;max-height:236px;overflow-y:auto}
+.sughead{display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:700;color:var(--ink-2);padding-left:4px}
+.sugchips{display:flex;flex-wrap:wrap;gap:8px}
+.sugchip{min-height:48px;padding:0 16px 0 12px;border-radius:999px;border:1.5px solid var(--ink);background:var(--surface);font:inherit;font-size:17px;font-weight:700;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.sugchip:active{background:var(--muted)}
+.toast{top:auto;bottom:164px;display:flex;align-items:center;gap:12px;padding:8px 8px 8px 16px;min-height:48px;box-sizing:border-box}
+.toast.inline{position:static;margin:8px 12px}
+.undo{min-height:40px;padding:0 14px;border-radius:10px;border:0;background:var(--surface);color:var(--ink);font:inherit;font-size:16px;font-weight:700;cursor:pointer;flex:none}
+@keyframes flash{0%{box-shadow:0 0 0 3px rgba(24,32,28,.9)}100%{box-shadow:0 0 0 3px rgba(24,32,28,0)}}
+.row.flash{animation:flash 1.8s ease-out}
+@media (prefers-reduced-motion: reduce){.row.flash{animation:none;box-shadow:0 0 0 3px var(--ink)}}
+</style>
+</helmet>
+<div style="width: 820px; height: 900px; box-sizing: border-box; padding: 28px; display: flex; gap: 28px; background: var(--canvas); font-family: 'Noto Sans JP', system-ui, sans-serif; color: var(--ink)">
+<div class="phone" style="width: {{phoneW}}px">
+
+<sc-if value="{{isHome}}" hint-placeholder-val="{{ true }}">
+<div class="scroll" style="padding-bottom: 88px">
+<sc-if value="{{tabLists}}" hint-placeholder-val="{{ true }}">
+<p class="dateline">11月23日（月）</p>
+<h1 class="h-title">買い物リスト</h1>
+<sc-if value="{{offline}}"><div class="sb off"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M12 20h.01"></path><path d="M8.5 16.4a5 5 0 0 1 7 0"></path><path d="M5 12.9a10 10 0 0 1 5.2-2.7"></path><path d="M19 12.9a10 10 0 0 0-2-1.5"></path><path d="M2 8.8a15 15 0 0 1 4.2-2.6"></path><path d="M22 8.8a15 15 0 0 0-11.3-3.8"></path><path d="M2 2l20 20"></path></svg>オフライン</div></sc-if>
+<div class="seg" role="tablist" aria-label="リストの種類">
+<button class="{{segActiveCls}}" onClick="{{pickActive}}">利用中 {{activeCount}}</button>
+<button class="{{segClosedCls}}" onClick="{{pickClosed}}">履歴 {{closedCount}}</button>
+</div>
+<sc-if value="{{segIsActive}}"><sc-for list="{{homeLists}}" as="L" hint-placeholder-count="2">
+<button class="card" onClick="{{L.open}}">
+<span class="stile" role="img" aria-label="{{L.iconLabel}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{L.icon}}"></path></svg></span>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<div><div class="t">{{L.name}}</div><div class="s">{{L.sub}}</div></div>
+<div class="bar" role="img" aria-label="{{L.progLabel}}"><span style="width: {{L.pct}}"></span></div>
+<sc-if value="{{L.hasPending}}"><span class="badge pend" style="align-self: flex-start">未送信あり</span></sc-if>
+</div>
+<sc-if value="{{L.isActive}}"><div class="remain" aria-label="あと{{L.remain}}品"><b>{{L.remain}}</b></div></sc-if>
+
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4F5A53" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+</button>
+</sc-for></sc-if>
+<sc-if value="{{segIsClosed}}"><sc-for list="{{histGroups}}" as="g" hint-placeholder-count="1"><div class="secthead">{{g.month}}</div>
+<sc-for list="{{g.items}}" as="H" hint-placeholder-count="2"><button class="card" onClick="{{H.open}}"><span class="stile" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{H.icon}}"></path></svg></span><div style="flex: 1; min-width: 0"><div class="t">{{H.name}}</div><div class="s">{{H.store}} · {{H.bought}}/{{H.total}} 品</div></div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4F5A53" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button></sc-for>
+</sc-for></sc-if>
+<sc-if value="{{homeEmpty}}"><div class="empty"><b>{{homeEmptyTitle}}</b>{{homeEmptyBody}}</div></sc-if>
+</sc-if>
+
+<sc-if value="{{tabStaples}}">
+<p class="dateline">いつも買うもの</p>
+<h1 class="h-title">定番</h1>
+<div class="chips" style="margin-bottom: 12px">
+<sc-for list="{{storeChips}}" as="c" hint-placeholder-count="2"><button class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.icon}}"></path></svg>{{c.name}}</button></sc-for>
+</div>
+<sc-for list="{{stapleItems}}" as="st" hint-placeholder-count="5"><div class="row"><button class="rowbody" style="padding-left: 14px" onClick="{{st.edit}}"><span class="iname">{{st.name}}</span></button><sc-if value="{{st.multi}}"><span class="qtypill" aria-label="いつもの数量 {{st.qty}}">×{{st.qty}}</span></sc-if><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="stroke: var(--ink-2); flex: none; margin-right: 12px"><path d="M9 6l6 6-6 6"></path></svg></div></sc-for>
+<sc-if value="{{stEmpty}}"><div class="empty"><b>定番なし</b></div></sc-if>
+</sc-if>
+
+<sc-if value="{{tabSettings}}">
+<p class="dateline">グループとアカウント</p>
+<h1 class="h-title">設定</h1>
+<div class="secthead">グループ</div>
+<div class="group">
+<button class="grow" onClick="{{goMembers}}">メンバー<span>{{memberCount}}/2人 ›</span></button>
+</div>
+<div class="secthead">共有データ</div>
+<div class="group">
+<button class="grow" onClick="{{goStores}}">購入先<span>{{storeCount}}件 ›</span></button>
+</div>
+<div class="secthead">アカウント</div>
+<div class="group">
+<button class="grow" onClick="{{openNick}}">呼び名<span>{{nick}} ›</span></button>
+<button class="grow" onClick="{{askLogout}}">ログアウト<span></span></button>
+<button class="grow" onClick="{{goAccount}}">アカウントを削除<span>›</span></button>
+</div>
+<div class="group">
+<button class="grow" onClick="{{goData}}">データの取り扱いについて<span>›</span></button>
+</div>
+</sc-if>
+</div>
+
+<sc-if value="{{tabStaples}}">
+<sc-if value="{{hasStSel}}"><div class="selbar" role="region" aria-label="選択中の定番"><span>{{stSelCount}}件</span><button class="btn pri" onClick="{{openToList}}">リストに追加</button><button class="iconbtn" style="color: var(--surface)" aria-label="選択を解除" onClick="{{clearStSel}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div></sc-if>
+<sc-if value="{{noStSel}}"><button class="{{fabCls}}" onClick="{{newStaple}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>定番</button></sc-if>
+</sc-if>
+<sc-if value="{{tabLists}}"><button class="{{fabCls}}" onClick="{{createTap}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>リスト</button></sc-if>
+
+<nav class="tabbar" aria-label="メイン">
+<button class="{{tabListsCls}}" onClick="{{goLists}}" aria-current="{{tabLists}}">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>買い物</button>
+<button class="{{tabStaplesCls}}" onClick="{{goStaples}}" aria-current="{{tabStaples}}">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"></path></svg>定番</button>
+<button class="{{tabSettingsCls}}" onClick="{{goSettings}}" aria-current="{{tabSettings}}">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>設定</button>
+</nav>
+</sc-if>
+
+<sc-if value="{{isList}}">
+<div class="top">
+<button class="iconbtn" aria-label="リスト一覧へ戻る" onClick="{{back}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<span class="stile" role="img" aria-label="{{L.iconLabel}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{L.icon}}"></path></svg></span><div class="tt"><b>{{L.name}}</b><span>{{L.storeLine}}</span></div>
+<button class="morebtn" aria-label="その他の操作" onClick="{{openMenu}}"><span class="morecirc"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5.5" cy="12" r="1.9"></circle><circle cx="12" cy="12" r="1.9"></circle><circle cx="18.5" cy="12" r="1.9"></circle></svg></span></button>
+</div>
+<div class="scroll">
+<div class="stick">
+<sc-if value="{{L.closed}}"><div class="sb info"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>{{L.closedAt}} 終了</div></sc-if>
+<sc-if value="{{showRejected}}"><div class="sb err" role="alert"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg><span style="flex: 1">{{rejectedCount}}件 反映されませんでした<small>先にリストが終了していました</small></span><button class="sbact" onClick="{{ackRejected}}">確認</button></div></sc-if>
+<sc-if value="{{offline}}"><div class="sb off"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M12 20h.01"></path><path d="M8.5 16.4a5 5 0 0 1 7 0"></path><path d="M5 12.9a10 10 0 0 1 5.2-2.7"></path><path d="M19 12.9a10 10 0 0 0-2-1.5"></path><path d="M2 8.8a15 15 0 0 1 4.2-2.6"></path><path d="M22 8.8a15 15 0 0 0-11.3-3.8"></path><path d="M2 2l20 20"></path></svg><span style="flex: 1">オフライン</span><sc-if value="{{showPendingOffline}}"><span class="cnt">未送信 {{pendingCount}}</span></sc-if></div></sc-if>
+<sc-if value="{{showFailed}}"><div class="sb err" role="alert"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg><span style="flex: 1">{{pendingCount}}件 送信失敗</span><button class="sbact" onClick="{{retry}}">再試行</button></div></sc-if>
+<sc-if value="{{showPendingOnline}}"><div class="sb pend" role="status"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>送信中…</div></sc-if>
+<div class="seg" role="tablist" aria-label="担当で絞り込み">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="3"><button class="{{f.cls}}" aria-pressed="{{f.on}}" onClick="{{f.pick}}">{{f.label}} {{f.count}}</button></sc-for>
+</div>
+<sc-if value="{{hasScope}}"><div class="prog2"><div class="bar" role="img" aria-label="{{scopeTotal}}品中{{scopeDone}}品をカゴに入れた"><span style="width: {{scopePct}}"></span></div><span><b>{{scopeDone}}</b> / {{scopeTotal}}</span></div></sc-if>
+</div>
+<sc-if value="{{allDone}}"><div class="donecard" role="status">
+<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1E6B47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M7.5 12.5l3 3 6-6.5"></path></svg>
+<b>{{doneTitle}}</b>
+</div></sc-if>
+<sc-for list="{{unp}}" as="it" hint-placeholder-count="4">
+<div class="{{it.rowCls}}">
+<button class="{{it.checkCls}}" disabled="{{it.lock}}" aria-pressed="{{it.purchased}}" aria-label="{{it.checkLabel}}" onClick="{{it.toggle}}"><span class="box"></span></button>
+<button class="rowbody" onClick="{{it.open}}"><span class="iname">{{it.name}}</span><span class="meta"><sc-if value="{{it.showWho}}"><span class="{{it.avCls}}" role="img" aria-label="担当 {{it.whoName}}">{{it.initial}}</span></sc-if><sc-if value="{{it.isPending}}"><span class="badge pend">未送信</span></sc-if><sc-if value="{{it.isFailed}}"><span class="badge fail">送信失敗</span></sc-if></span></button>
+<sc-if value="{{it.multi}}"><span class="qtypill" aria-hidden="true">×{{it.qty}}</span></sc-if>
+</div>
+</sc-for>
+<sc-if value="{{unpEmpty}}"><div class="empty"><sc-if value="{{noItems}}"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#8FB8A2" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-bottom: 8px"><path d="M4 8h16l-1.5 10.5a2 2 0 0 1-2 1.5h-9a2 2 0 0 1-2-1.5z"></path><path d="M8.5 8l2-4M15.5 8l-2-4M9 12v4M12 12v4M15 12v4"></path></svg></sc-if><b>{{unpEmptyTitle}}</b></div></sc-if>
+<sc-if value="{{hasPur}}">
+<div class="secthead">購入済み {{purCount}}</div>
+<sc-for list="{{pur}}" as="it" hint-placeholder-count="2">
+<div class="{{it.rowCls}}">
+<button class="{{it.checkCls}}" disabled="{{it.lock}}" aria-pressed="{{it.purchased}}" aria-label="{{it.checkLabel}}" onClick="{{it.toggle}}"><span class="box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span></button>
+<button class="rowbody" onClick="{{it.open}}"><span class="iname done">{{it.name}}</span><span class="meta"><sc-if value="{{it.showWho}}"><span class="{{it.avCls}}" role="img" aria-label="担当 {{it.whoName}}">{{it.initial}}</span></sc-if><sc-if value="{{it.isPending}}"><span class="badge pend">未送信</span></sc-if><sc-if value="{{it.isFailed}}"><span class="badge fail">送信失敗</span></sc-if></span></button>
+<sc-if value="{{it.multi}}"><span class="qtypill" aria-hidden="true">×{{it.qty}}</span></sc-if>
+</div>
+</sc-for>
+</sc-if>
+<sc-if value="{{showEnd}}"><div class="endwrap"><button class="btn sec" onClick="{{askClose}}">買い物を終える</button></div></sc-if>
+</div>
+<sc-if value="{{toastInline}}"><div class="toast inline" role="status"><span style="flex: 1">{{toast}}</span><sc-if value="{{hasUndo}}"><button class="undo" onClick="{{doUndo}}">取り消す</button></sc-if></div></sc-if>
+<sc-if value="{{L.active}}"><div>
+<sc-if value="{{doneCanClose}}"><div class="endbar"><button class="{{onlineBtnCls2}}" onClick="{{askClose}}">買い物を終える</button></div></sc-if>
+<sc-if value="{{showSug}}"><div class="sug" role="region" aria-label="定番の候補">
+<div class="sughead"><span>{{L.store}}の定番</span><button class="iconbtn" aria-label="候補を閉じる" onClick="{{closeSug}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div class="sugchips"><sc-for list="{{sugs}}" as="g" hint-placeholder-count="4"><button class="sugchip" onMouseDown="{{g.keep}}" onClick="{{g.add}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>{{g.name}}</button></sc-for></div>
+<sc-if value="{{sugNone}}"><div class="note" style="text-align: left; margin: 4px 4px 0">{{sugNoneText}}</div></sc-if>
+</div></sc-if>
+<sc-if value="{{qaErr}}"><div class="qaerr" role="alert">{{qaErr}}</div></sc-if>
+<div class="{{qaCls}}">
+<label for="qa" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">商品を追加</label>
+<input id="qa" placeholder="商品を追加" enterkeyhint="done" autocomplete="off" value="{{qaName}}" onClick="{{qaTapOffline}}" onFocus="{{qaFocus}}" onKeyDown="{{qaKey}}" onChange="{{onQa}}">
+<button type="button" class="send" aria-label="追加" disabled="{{qaEmpty}}" onClick="{{quickSubmit}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"></path></svg></button>
+</div>
+</div></sc-if>
+<sc-if value="{{L.closed}}"><div class="bottom"><button class="btn sec" onClick="{{startCarry}}">未購入を新しいリストへ</button></div></sc-if>
+</sc-if>
+
+<sc-if value="{{isCarry}}">
+<div class="top">
+<button class="iconbtn" aria-label="元のリストへ戻る" onClick="{{backToList}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<div class="tt"><b>未購入を新しいリストへ</b><span>{{carryFrom}} から</span></div>
+</div>
+<div class="scroll">
+<sc-if value="{{carryNameClosed}}"><div class="namerow"><span class="k">名前</span><span class="v">{{carryPlaceholder}}</span><button class="mini" onClick="{{openCarryName}}">変更</button></div></sc-if>
+<sc-if value="{{carryNameOpen}}"><div class="field"><label class="lbl" for="carryname">名前</label><input id="carryname" class="input" placeholder="{{carryPlaceholder}}" value="{{carryName}}" onChange="{{onCarryName}}"></div></sc-if>
+<div class="sb info" aria-label="購入先 {{carryStore}}（変更不可）"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>{{carryStore}}</div>
+<div class="secthead">未購入 {{carrySelCount}}/{{carryTotal}}</div>
+<sc-for list="{{carryRows}}" as="r" hint-placeholder-count="3">
+<div class="srow"><button class="srow-main" aria-pressed="{{r.on}}" onClick="{{r.toggle}}"><span class="{{r.boxCls}}"><sc-if value="{{r.on}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></sc-if></span><span style="display: flex; flex-direction: column"><span class="iname">{{r.name}}</span><span class="meta"><sc-if value="{{r.multi}}"><b style="color: var(--on-done-soft)">×{{r.qty}}</b> · </sc-if>担当 {{r.whoName}}</span></span></button></div>
+</sc-for>
+<sc-if value="{{carryErr}}"><div class="err" style="margin-top: 12px">{{carryErr}}</div></sc-if>
+</div>
+<div class="bottom"><button class="btn pri" onClick="{{createCarry}}">{{carryBtn}}</button></div>
+</sc-if>
+
+<sc-if value="{{isStores}}">
+<div class="top"><button class="iconbtn" aria-label="戻る" onClick="{{toSettings}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button><div class="tt"><b>購入先</b></div></div>
+<div class="scroll" style="padding-bottom: 88px">
+<div class="group" style="margin-top: 8px">
+<sc-for list="{{storeRows}}" as="r" hint-placeholder-count="2"><button class="grow" style="min-height: 64px; gap: 12px; justify-content: flex-start" onClick="{{r.edit}}"><span class="stile" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{r.icon}}"></path></svg></span><b style="flex: 1">{{r.name}}</b><span>{{r.usage}}</span></button></sc-for>
+</div>
+<sc-if value="{{noStores}}"><div class="empty"><b>購入先なし</b></div></sc-if>
+</div>
+<button class="{{fabCls}}" style="bottom: 24px" onClick="{{newStore}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>購入先</button>
+</sc-if>
+
+<sc-if value="{{isMembers}}">
+<div class="top"><button class="iconbtn" aria-label="戻る" onClick="{{toSettings}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button><div class="tt"><b>メンバー</b><span>{{memberCount}}/2人</span></div></div>
+<div class="scroll">
+<div class="group" style="margin-top: 8px">
+<div class="mrow"><span class="{{avMe}}" aria-hidden="true">{{iniMe}}</span><div class="nm">{{memMe}}<small>管理者</small></div></div>
+<sc-if value="{{hasMom}}"><div class="mrow"><span class="{{avMom}}" aria-hidden="true">{{iniMom}}</span><div class="nm">{{memMom}}<small>hanako@example.com</small></div><sc-if value="{{isAdminView}}"><button class="mini d" onClick="{{askRemove}}">外す</button></sc-if></div></sc-if>
+</div>
+<sc-if value="{{canInvite}}">
+<div class="secthead">招待</div>
+<sc-if value="{{noInvite}}"><button class="btn pri" onClick="{{issueInvite}}">招待リンクを発行</button></sc-if>
+<sc-if value="{{hasInvite}}"><div class="group" style="padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="font-size: 16px"><b style="font-size: 18px">11月24日（火）14:30</b>まで有効</div>
+<div style="display: flex; gap: 8px"><button class="mini p" style="flex: 1" onClick="{{shareInvite}}">共有</button><button class="mini" onClick="{{copyInvite}}">コピー</button><button class="mini d" onClick="{{revokeInvite}}">取消</button></div>
+</div>
+<div class="secthead">参加申請 {{reqCount}}件</div>
+<sc-if value="{{noReq}}"><div class="empty" style="padding: 16px"><b>申請なし</b></div></sc-if>
+<div class="group"><sc-for list="{{reqRows}}" as="q" hint-placeholder-count="1"><div class="mrow"><div class="nm">{{q.name}}<small>{{q.email}}</small></div><button class="mini p" onClick="{{q.approve}}">承認</button><button class="mini" onClick="{{q.reject}}">拒否</button></div></sc-for></div>
+</sc-if>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{isAccount}}">
+<div class="top"><button class="iconbtn" aria-label="戻る" onClick="{{toSettings}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button><div class="tt"><b>アカウントを削除</b></div></div>
+<div class="scroll">
+<div class="sb info" style="margin-top: 8px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4"></path></svg><span style="flex: 1">{{accTitle}}<small>{{accSub}}</small></span></div>
+<sc-if value="{{isAdminView}}"><button class="btn sec" onClick="{{goGroupDelete}}">グループを削除</button></sc-if><sc-if value="{{isMemberView}}"><button class="btn sec" onClick="{{proto}}">グループから抜ける</button></sc-if>
+<div style="height: 24px"></div>
+<button class="btn pri offl" onClick="{{accountBlocked}}">アカウントを削除</button>
+</div>
+</sc-if>
+
+<sc-if value="{{isGroupDelete}}">
+<div class="top"><button class="iconbtn" aria-label="戻る" onClick="{{toSettings}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button><div class="tt"><b>グループを削除</b></div></div>
+<div class="scroll">
+<div class="group" style="margin-top: 8px; padding: 14px 16px">
+<div class="lbl" style="margin-bottom: 6px">削除されるもの</div>
+<ul class="prose"><li>リスト {{gdLists}}件（履歴を含む）</li><li>定番 {{gdStaples}}件・購入先 {{storeCount}}件</li><li>メンバー・招待</li></ul>
+</div>
+<button style="width: 100%; margin: 8px 0 16px; text-align: left; display: flex; gap: 12px; align-items: center; background: transparent; border: 0; font: inherit; font-size: 17px; font-weight: 700; color: var(--ink); min-height: 52px; padding: 0; cursor: pointer" aria-pressed="{{gdChecked}}" onClick="{{gdToggle}}"><span class="{{gdBoxCls}}" style="width: 28px; height: 28px"><sc-if value="{{gdChecked}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></sc-if></span>元に戻せないことを確認</button>
+<button class="{{gdBtnCls}}" onClick="{{doGroupDelete}}">グループを削除</button>
+</div>
+</sc-if>
+
+<sc-if value="{{isDeleting}}">
+<div class="scroll" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-align: center">
+<div class="spin" role="img" aria-label="削除中"></div><b style="font-size: 20px">削除しています</b>
+</div>
+</sc-if>
+
+<sc-if value="{{isWelcome}}">
+<div class="scroll" style="display: flex; flex-direction: column; justify-content: center; gap: 14px">
+<h1 class="h-title" style="margin: 0">はじめに</h1>
+<div class="field" style="margin: 0"><label class="lbl" for="wnick">呼び名</label><input id="wnick" class="input" value="{{nick}}" onChange="{{onNickDirect}}"></div>
+<button class="btn pri" onClick="{{createGroup}}">グループを作成</button>
+</div>
+</sc-if>
+
+<sc-if value="{{isLogin}}">
+<div class="scroll" style="display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 16px">
+<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#1E6B47" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16l-1.5 11a2 2 0 0 1-2 1.7H7.5a2 2 0 0 1-2-1.7z"></path><path d="M9 7a3 3 0 0 1 6 0"></path><path d="M9 12.5l2 2 4-4"></path></svg>
+<h1 class="h-title" style="margin: 0">買い物リスト</h1>
+<button class="btn pri" onClick="{{login}}">Googleでログイン</button>
+</div>
+</sc-if>
+
+<sc-if value="{{isData}}">
+<div class="top"><button class="iconbtn" aria-label="戻る" onClick="{{toSettings}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button><div class="tt"><b>データの取り扱い</b></div></div>
+<div class="scroll">
+<ul class="prose" style="margin-top: 12px; display: flex; flex-direction: column; gap: 10px">
+<li>リストや定番は、グループの2人だけが見られます</li>
+<li>参加を申請すると、メールアドレスが管理者に伝わります</li>
+<li>アカウントを削除すると、個人のデータを削除します（記録・バックアップは30日以内の削除を目標）</li>
+<li>Googleアカウントは削除しません</li>
+</ul>
+</div>
+</sc-if>
+
+<sc-if value="{{sheetAdd}}">
+<div class="scrim">
+<div class="sheet" role="dialog" aria-modal="true" aria-label="定番から追加">
+<div class="grab"></div>
+<div class="sheethead"><h2>定番から追加</h2><button class="iconbtn" aria-label="閉じる" onClick="{{closeSheet}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<sc-if value="{{addManual}}">
+<div class="field"><label class="lbl" for="addname">商品名</label><input id="addname" class="input" placeholder="例：牛乳" value="{{addName}}" onChange="{{onAddName}}"></div>
+<sc-if value="{{mergeHint}}"><div class="hint" role="status">{{mergeHint}}</div></sc-if>
+<div class="field"><span class="lbl">数量</span>
+<div class="stepper"><button aria-label="数量を減らす" disabled="{{qtyMin}}" onClick="{{qtyDec}}">−</button><span aria-live="polite">{{addQty}}</span><button aria-label="数量を増やす" disabled="{{qtyMax}}" onClick="{{qtyInc}}">＋</button></div></div>
+<div class="field"><span class="lbl">担当</span>
+<div class="chips"><button class="{{whoMeCls}}" disabled="{{whoLocked}}" aria-pressed="{{whoMe}}" onClick="{{setWhoMe}}">{{labMe}}</button><button class="{{whoMomCls}}" disabled="{{whoLocked}}" aria-pressed="{{whoMom}}" onClick="{{setWhoMom}}">{{labMom}}</button></div>
+</div>
+<sc-if value="{{addErr}}"><div class="err" role="alert" style="margin-bottom: 12px">{{addErr}}</div></sc-if>
+<button class="btn pri" onClick="{{submitManual}}">{{addBtn}}</button>
+</sc-if>
+<sc-if value="{{addStaple}}">
+<sc-for list="{{stapleRows}}" as="r" hint-placeholder-count="4">
+<div class="srow">
+<button class="srow-main" aria-pressed="{{r.on}}" onClick="{{r.toggle}}"><span class="{{r.boxCls}}"><sc-if value="{{r.on}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></sc-if></span><span style="display: flex; flex-direction: column"><span class="iname">{{r.name}}</span><sc-if value="{{r.inList}}"><span class="meta">リストにあり ×{{r.inQty}}</span></sc-if></span></button>
+<sc-if value="{{r.on}}"><div class="srow-opts">
+<div class="stepper"><button aria-label="{{r.name}}の数量を減らす" disabled="{{r.min}}" onClick="{{r.dec}}">−</button><span>{{r.qty}}</span><button aria-label="{{r.name}}の数量を増やす" onClick="{{r.inc}}">＋</button></div>
+<div class="chips"><button class="{{r.meCls}}" aria-pressed="{{r.me}}" onClick="{{r.setMe}}">{{labMe}}</button><button class="{{r.momCls}}" aria-pressed="{{r.mom}}" onClick="{{r.setMom}}">{{labMom}}</button></div>
+</div></sc-if>
+</div>
+</sc-for>
+<sc-if value="{{addErr}}"><div class="err" role="alert" style="margin: 12px 0">{{addErr}}</div></sc-if>
+<button class="btn pri" style="margin-top: 12px" disabled="{{stapleNone}}" onClick="{{submitStaple}}">{{stapleBtn}}</button>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{sheetEdit}}">
+<div class="scrim">
+<div class="sheet" role="dialog" aria-modal="true" aria-label="商品">
+<div class="grab"></div>
+<div class="sheethead"><h2>{{editTitle}}</h2><button class="iconbtn" aria-label="閉じる" onClick="{{closeSheet}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<sc-if value="{{editable}}">
+<div class="field"><label class="lbl" for="editname">商品名</label><input id="editname" class="input" value="{{eName}}" onChange="{{onEditName}}"></div>
+<div class="field"><span class="lbl">数量</span><div class="stepper"><button aria-label="数量を減らす" disabled="{{eMin}}" onClick="{{eDec}}">−</button><span>{{eQty}}</span><button aria-label="数量を増やす" disabled="{{eMax}}" onClick="{{eInc}}">＋</button></div></div>
+<div class="field"><span class="lbl">担当</span><div class="chips"><button class="{{eMeCls}}" aria-pressed="{{eMe}}" onClick="{{eSetMe}}" style="order: {{ordMe}}">{{labMe}}</button><sc-if value="{{hasMom}}"><button class="{{eMomCls}}" aria-pressed="{{eMom}}" onClick="{{eSetMom}}" style="order: {{ordMom}}">{{labMom}}</button></sc-if></div></div>
+<sc-if value="{{editErr}}"><div class="err" role="alert" style="margin-bottom: 12px">{{editErr}}</div></sc-if>
+<sc-if value="{{noConfirm}}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<button class="btn pri" onClick="{{saveEdit}}">変更を保存</button>
+<button class="btn sec" onClick="{{toStaple}}">定番に登録</button>
+<button class="btn ghost" style="color: var(--danger)" onClick="{{askDelete}}">商品を削除</button>
+</div>
+</sc-if>
+<sc-if value="{{confirmDel}}">
+<div class="err" style="margin-bottom: 10px">「{{eOrigName}}」をリストから削除します。元に戻せません。</div>
+<div style="display: flex; gap: 8px"><button class="btn sec" onClick="{{cancelDelete}}">やめる</button><button class="btn dan" onClick="{{doDelete}}">削除する</button></div>
+</sc-if>
+</sc-if>
+<sc-if value="{{readonlyItem}}">
+<div class="meta" style="font-size: 16px; margin: 8px 0 16px">数量 <b style="color: var(--ink)">{{eQty}}</b> · 担当 {{eWhoName}} · {{eStatus}}</div>
+<button class="btn pri" onClick="{{toStaple}}">定番に登録</button>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{sheetMenu}}">
+<div class="scrim">
+<div class="sheet" role="dialog" aria-modal="true" aria-label="その他の操作">
+<div class="grab"></div>
+<div class="sheethead"><h2>その他</h2><button class="iconbtn" aria-label="閉じる" onClick="{{closeSheet}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<sc-if value="{{L.active}}">
+<button class="{{menuCls}}" onClick="{{openChangeStore}}">購入先を変更</button>
+<button class="{{menuCls}}" onClick="{{startCarry}}">未購入を新しいリストへ</button>
+<button class="{{menuCls}}" onClick="{{askClose}}">買い物を終える</button>
+<button class="{{menuCls}}" style="color: var(--danger)" onClick="{{askDelHist}}">リストを削除</button>
+</sc-if>
+<sc-if value="{{L.closed}}">
+<button class="{{menuCls}}" onClick="{{startCarry}}">未購入を新しいリストへ</button>
+<button class="{{menuCls}}" style="color: var(--danger)" onClick="{{askDelHist}}">履歴を削除</button>
+</sc-if>
+<sc-if value="{{offline}}"><div class="sb off" style="margin-top: 12px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none"><path d="M12 20h.01"></path><path d="M8.5 16.4a5 5 0 0 1 7 0"></path><path d="M5 12.9a10 10 0 0 1 5.2-2.7"></path><path d="M19 12.9a10 10 0 0 0-2-1.5"></path><path d="M2 8.8a15 15 0 0 1 4.2-2.6"></path><path d="M22 8.8a15 15 0 0 0-11.3-3.8"></path><path d="M2 2l20 20"></path></svg>オフライン</div></sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{sheetClose}}">
+<div class="dialogwrap">
+<div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="closettl">
+<h2 id="closettl">買い物を終えますか</h2>
+<p>「{{L.name}}」は履歴に移り、変更できなくなります。{{otherName}}の未送信のチェックも反映されません。</p>
+<button class="btn pri" onClick="{{doClose}}">買い物を終える</button>
+<button class="btn ghost" onClick="{{closeSheet}}">キャンセル</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{sheetDelHist}}">
+<div class="dialogwrap">
+<div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="delttl">
+<h2 id="delttl">「{{L.name}}」を削除しますか</h2>
+<p>{{L.delBody}}</p>
+<button class="btn dan" onClick="{{doDelHist}}">{{L.delLabel}}</button>
+<button class="btn ghost" onClick="{{closeSheet}}">キャンセル</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{sheetToList}}">
+<div class="scrim">
+<div class="sheet" role="dialog" aria-modal="true" aria-label="どのリストに追加">
+<div class="grab"></div>
+<div class="sheethead"><h2>どのリストに追加？</h2><button class="iconbtn" aria-label="閉じる" onClick="{{closeSheet}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px">
+<sc-for list="{{toListOptions}}" as="o" hint-placeholder-count="2"><button class="card" onClick="{{o.pick}}"><span class="stile" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{o.icon}}"></path></svg></span><div style="flex: 1; min-width: 0"><div class="t">{{o.name}}</div><div class="s">{{o.sub}}</div></div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4F5A53" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button></sc-for>
+<sc-if value="{{toListNone}}"><div class="empty" style="padding: 12px"><b>{{staplesStore}}のリストなし</b></div><button class="btn sec" onClick="{{createTap}}">＋ リストを作成</button></sc-if>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{sheetStaple}}">
+<div class="scrim">
+<div class="sheet" role="dialog" aria-modal="true" aria-label="{{stTitle}}">
+<div class="grab"></div>
+<div class="sheethead"><h2>{{stTitle}}</h2><button class="iconbtn" aria-label="閉じる" onClick="{{closeSheet}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div class="field"><label class="lbl" for="stname">商品名</label><input id="stname" class="input" placeholder="例：牛乳" value="{{stName}}" onChange="{{onStName}}"></div>
+<div class="field"><span class="lbl">いつもの数量</span><div class="stepper"><button aria-label="数量を減らす" disabled="{{stQMin}}" onClick="{{stQDec}}">−</button><span aria-live="polite">{{stQ}}</span><button aria-label="数量を増やす" disabled="{{stQMax}}" onClick="{{stQInc}}">＋</button></div></div>
+<div class="field"><span class="lbl">お店</span><div class="chips"><sc-for list="{{stStoreChips}}" as="c" hint-placeholder-count="2"><button class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.icon}}"></path></svg>{{c.name}}</button></sc-for></div></div>
+<sc-if value="{{stErr}}"><div class="err" role="alert" style="margin-bottom: 12px">{{stErr}}</div></sc-if>
+<sc-if value="{{stNoConfirm}}"><div style="display: flex; flex-direction: column; gap: 8px">
+<button class="btn pri" onClick="{{saveStaple}}">{{stSaveLabel}}</button>
+<sc-if value="{{stCanDelete}}"><button class="btn ghost" style="color: var(--danger)" onClick="{{askDelStaple}}">定番から削除</button></sc-if>
+</div></sc-if>
+<sc-if value="{{stConfirm}}"><div class="err" style="margin-bottom: 10px">「{{stOrig}}」を定番から削除。リストの商品は変わりません。</div><div style="display: flex; gap: 8px"><button class="btn sec" onClick="{{cancelDelStaple}}">やめる</button><button class="btn dan" onClick="{{doDelStaple}}">削除する</button></div></sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{sheetCreate}}">
+<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="リストを作成">
+<div class="grab"></div>
+<div class="sheethead"><h2>リストを作成</h2><button class="iconbtn" aria-label="閉じる" onClick="{{closeSheet}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div class="field"><span class="lbl">どのお店？</span><div class="chips"><sc-for list="{{crStores}}" as="c" hint-placeholder-count="2"><button class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.icon}}"></path></svg>{{c.name}}</button></sc-for><button class="chip" style="border-style: dashed" onClick="{{newStoreFromCreate}}">＋ 購入先</button></div></div>
+<div class="field"><span class="lbl">いつ買う？</span><div class="chips"><sc-for list="{{crDays}}" as="d" hint-placeholder-count="3"><button class="{{d.cls}}" aria-pressed="{{d.on}}" onClick="{{d.pick}}">{{d.label}}</button></sc-for><button class="{{crOtherCls}}" aria-pressed="{{crOtherOn}}" aria-expanded="{{crCalOpen}}" onClick="{{toggleCal}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16v15H4zM4 10h16M8 3v4M16 3v4"></path></svg>{{crOtherLabel}}</button></div>
+<sc-if value="{{crCalOpen}}"><div class="cal" role="group" aria-label="日付を選ぶ">
+<div class="calhead"><button class="iconbtn" aria-label="前の月" disabled="{{calPrevOff}}" onClick="{{calPrev}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button><b>{{calTitle}}</b><button class="iconbtn" aria-label="次の月" onClick="{{calNext}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button></div>
+<div class="calgrid"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+<sc-for list="{{calCells}}" as="c" hint-placeholder-count="35"><button class="{{c.cls}}" disabled="{{c.off}}" aria-label="{{c.aria}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div>
+</div></sc-if></div>
+<sc-if value="{{crNameClosed}}"><div class="namerow"><span class="k">名前</span><span class="v">{{crPlaceholder}}</span><button class="mini" onClick="{{openCrName}}">変更</button></div></sc-if>
+<sc-if value="{{crNameOpen}}"><div class="field"><label class="lbl" for="crname">名前</label><input id="crname" class="input" placeholder="{{crPlaceholder}}" value="{{crName}}" onChange="{{onCrName}}"></div></sc-if>
+<sc-if value="{{crErr}}"><div class="err" role="alert" style="margin-bottom: 12px">{{crErr}}</div></sc-if>
+<button class="btn pri" onClick="{{doCreate}}">リストを作成</button>
+</div></div>
+</sc-if>
+
+<sc-if value="{{sheetChangeStore}}">
+<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="購入先を変更">
+<div class="grab"></div>
+<div class="sheethead"><h2>購入先を変更</h2><button class="iconbtn" aria-label="閉じる" onClick="{{closeSheet}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div class="chips" style="margin: 12px 0 16px"><sc-for list="{{csStores}}" as="c" hint-placeholder-count="2"><button class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.icon}}"></path></svg>{{c.name}}</button></sc-for></div>
+<button class="btn pri" onClick="{{doChangeStore}}">変更する</button>
+</div></div>
+</sc-if>
+
+<sc-if value="{{sheetStoreEdit}}">
+<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="{{seTitle}}">
+<div class="grab"></div>
+<div class="sheethead"><h2>{{seTitle}}</h2><button class="iconbtn" aria-label="閉じる" onClick="{{closeSheet}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div class="field"><label class="lbl" for="sename">名前</label><input id="sename" class="input" placeholder="例：ホームセンター" value="{{seName}}" onChange="{{onSeName}}"></div>
+<div class="field"><span class="lbl">アイコン</span><div class="icongrid" role="group" aria-label="アイコン"><sc-for list="{{seIcons}}" as="i" hint-placeholder-count="12"><button class="{{i.cls}}" aria-label="{{i.label}}" aria-pressed="{{i.on}}" onClick="{{i.pick}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{i.d}}"></path></svg></button></sc-for></div></div>
+<sc-if value="{{seErr}}"><div class="err" role="alert" style="margin-bottom: 12px">{{seErr}}</div></sc-if>
+<sc-if value="{{seNoConfirm}}"><div style="display: flex; flex-direction: column; gap: 8px"><button class="btn pri" onClick="{{saveStore}}">{{seSave}}</button><sc-if value="{{seCanDel}}"><button class="btn ghost" style="color: var(--danger)" onClick="{{askDelStore}}">購入先を削除</button></sc-if></div></sc-if>
+<sc-if value="{{seConfirm}}"><div class="err" style="margin-bottom: 10px">「{{seOrig}}」を削除します。</div><div style="display: flex; gap: 8px"><button class="btn sec" onClick="{{cancelDelStore}}">やめる</button><button class="btn dan" onClick="{{doDelStore}}">削除する</button></div></sc-if>
+</div></div>
+</sc-if>
+
+<sc-if value="{{sheetNick}}">
+<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="呼び名">
+<div class="grab"></div>
+<div class="sheethead"><h2>呼び名</h2><button class="iconbtn" aria-label="閉じる" onClick="{{closeSheet}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div class="field"><input class="input" aria-label="呼び名" value="{{nickDraft}}" onChange="{{onNick}}"></div>
+<button class="btn pri" onClick="{{saveNick}}">保存</button>
+</div></div>
+</sc-if>
+
+<sc-if value="{{sheetRemove}}">
+<div class="dialogwrap"><div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="rmttl">
+<h2 id="rmttl">花子をグループから外しますか</h2>
+<p>利用中リストの花子の担当 {{momActiveCount}}件は自分の担当になります。</p>
+<button class="btn dan" onClick="{{doRemove}}">外す</button>
+<button class="btn ghost" onClick="{{closeSheet}}">キャンセル</button>
+</div></div>
+</sc-if>
+
+<sc-if value="{{sheetLogout}}">
+<div class="dialogwrap"><div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="lottl">
+<h2 id="lottl">ログアウトしますか</h2>
+<button class="btn pri" onClick="{{doLogout}}">ログアウト</button>
+<button class="btn ghost" onClick="{{closeSheet}}">キャンセル</button>
+</div></div>
+</sc-if>
+
+<sc-if value="{{showCeleb}}">
+<div class="dialogwrap"><div class="celeb" role="dialog" aria-modal="true" aria-labelledby="celttl">
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" aria-hidden="true"><path d="M18 38h60l-6 40a6 6 0 0 1-6 5H30a6 6 0 0 1-6-5z" stroke-width="3" stroke-linejoin="round" style="fill: var(--done-soft); stroke: var(--done)"></path><path d="M34 38c0-10 6-18 14-18s14 8 14 18" stroke-width="3" stroke-linecap="round" style="stroke: var(--done)"></path><path d="M30 30c4-6 10-8 14-6M60 22c4 0 8 3 9 8" stroke="#C98A3A" stroke-width="3" stroke-linecap="round"></path><circle cx="40" cy="60" r="4" style="fill: var(--done)"></circle><circle cx="56" cy="60" r="4" style="fill: var(--done)"></circle><path d="M40 70c5 4 11 4 16 0" stroke-width="3" stroke-linecap="round" style="stroke: var(--done)"></path></svg>
+<b id="celttl">おつかれさまでした</b>
+<div><span class="n">{{celebN}}</span><span style="font-size: 18px; font-weight: 700"> 品</span></div>
+<p>{{celebSub}}</p>
+<sc-if value="{{celebHasRemain}}"><button class="btn sec" onClick="{{celebCarry}}">残り{{celebRemain}}品を次のリストへ</button></sc-if>
+<button class="btn pri" onClick="{{closeCeleb}}">閉じる</button>
+</div></div>
+</sc-if>
+
+<sc-if value="{{toastFloat}}"><div class="toast" role="status"><span style="flex: 1">{{toast}}</span><sc-if value="{{hasUndo}}"><button class="undo" onClick="{{doUndo}}">取り消す</button></sc-if></div></sc-if>
+</div>
+
+<aside class="demo" aria-label="プロトタイプの操作パネル">
+<h2>プロトタイプ操作</h2>
+<p style="margin: 0; color: var(--ink-2)">このパネルはアプリには含みません。通信状態や相手の端末の操作を再現します。</p>
+<button class="{{onlineBtnCls}}" aria-pressed="{{offline}}" onClick="{{toggleOnline}}">{{onlineBtn}}</button>
+<button class="{{viewerBtnCls}}" onClick="{{toggleViewer}}">{{viewerBtn}}</button>
+<button class="dbtn" onClick="{{otherClose}}">{{otherName}}の端末でこのリストを終了する</button>
+<button class="dbtn" onClick="{{armFail}}">{{failBtn}}</button>
+<button class="dbtn" onClick="{{demoRequest}}">花子の端末から参加申請を送る</button>
+<button class="dbtn" onClick="{{reset}}">最初からやり直す</button>
+<div style="display: flex; flex-direction: column; gap: 6px"><b style="font-size: 14px">画面の幅</b><div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{widths}}" as="w" hint-placeholder-count="4"><button class="{{w.cls}}" aria-pressed="{{w.on}}" onClick="{{w.pick}}" style="min-width: 56px; text-align: center">{{w.n}}</button></sc-for></div></div>
+<p style="margin: 0; color: var(--ink-2)">{{demoState}}</p>
+<h3>試せる流れ</h3>
+<ol>
+<li>スーパーの「11月23日（月）」を開き、自分／花子／すべてを切り替える</li>
+<li>「花子の端末に切替」 › 同じリストが「自分／太郎／すべて」で見える</li>
+<li>下の入力欄を押す › 定番の候補を押して追加 › 上の「取り消す」</li>
+<li>入力欄に「牛乳」と入れて確定 › 合算（行が光る）。「花子」表示中に追加すると担当は花子</li>
+<li>通信を切ってチェック › 未送信表示 › 通信を戻す</li>
+<li>通信を切ってチェック › 花子の端末で終了 › 通信を戻す（反映されない通知）</li>
+<li>リストの一番下「買い物を終える」 › 履歴で未購入を新しいリストへ</li>
+<li>設定 › メンバー › 花子を外す › 招待リンクを発行 › 「花子の端末から参加申請を送る」 › 承認</li>
+<li>設定 › 購入先 › 追加（アイコンを選ぶ）／使用中は削除できない</li>
+<li>設定 › アカウントを削除 › グループを削除 › はじめに</li>
+<li>定番タブ › 名前を押して編集・削除／右下「＋定番」で追加</li>
+<li>終了済みの商品を選んで定番に登録</li>
+</ol>
+</aside>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":820,"height":900}}'>
+var N = function (s) { return (s || '').normalize('NFKC').trim().toLowerCase(); };
+var LEN = function (s) { return Array.from((s || '').trim()).length; };
+var VIEWER = 'me';
+var NICK = { me: '太郎', mom: '花子' };
+function lab(w) { return w === VIEWER ? '自分' : NICK[w]; }
+function ini(w) { return w === VIEWER ? '自' : NICK[w].charAt(0); }
+function otherW() { return VIEWER === 'me' ? 'mom' : 'me'; }
+var WHO = { me: '太郎', mom: '花子' };
+var SEQ = 100;
+var ICONS = {
+  cart: ['カート', 'M2 3h2l2.7 12.4a2 2 0 0 0 2 1.6h9.6a2 2 0 0 0 2-1.6L22 7H5.2M8 21a1 1 0 1 0 2 0a1 1 0 1 0-2 0M18 21a1 1 0 1 0 2 0a1 1 0 1 0-2 0'],
+  pill: ['薬', 'M10.5 20.5a4.95 4.95 0 0 1-7-7l9-9a4.95 4.95 0 0 1 7 7zM8.5 8.5l7 7'],
+  bread: ['パン', 'M5 11a4 4 0 0 1 3-7h8a4 4 0 0 1 3 7v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z'],
+  fish: ['魚', 'M6.5 12c3-5 9-6 14 0c-5 6-11 5-14 0zM6.5 12L2 8.5v7zM16 11.5h.01'],
+  veg: ['野菜', 'M2.3 21.7s9.9-3.5 12.7-6.3a4.5 4.5 0 0 0-6.4-6.4C5.8 11.8 2.3 21.7 2.3 21.7zM15 9l6-6M16 3l1 4M21 8l-4-1'],
+  home: ['日用品', 'M3 10l9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zM9 21v-7h6v7'],
+  tool: ['工具', 'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z'],
+  shirt: ['衣類', 'M20.4 3.5L16 2a4 4 0 0 1-8 0L3.6 3.5a2 2 0 0 0-1.3 2.2l.6 3.5a1 1 0 0 0 1 .8H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.1a1 1 0 0 0 1-.8l.6-3.5a2 2 0 0 0-1.3-2.2z'],
+  cafe: ['カフェ', 'M10 2v2M14 2v2M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h12a4 4 0 1 1 0 8h-1'],
+  gift: ['ギフト', 'M3 8h18v4H3zM12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5'],
+  store: ['お店', 'M3 9l1.5-5h15L21 9M3 9h18v2a3 3 0 0 1-6 0a3 3 0 0 1-6 0a3 3 0 0 1-6 0zM5 13v8h14v-8M10 21v-5h4v5'],
+  book: ['本', 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5zM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5']
+};
+var STORE_ICON = {};
+function ic(store) { var k = STORE_ICON[store] || 'store'; return { d: ICONS[k][1], label: store + '（' + ICONS[k][0] + 'のアイコン）' }; }
+var DOW = ['日', '月', '火', '水', '木', '金', '土'];
+function addDays(iso, n) { var d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + n); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+function jpDate(iso) { var d = new Date(iso + 'T00:00:00'); return (d.getMonth() + 1) + '月' + d.getDate() + '日（' + DOW[d.getDay()] + '）'; }
+var TODAY = '2026-11-23';
+function autoName(store, iso) { return jpDate(iso); }
+function parseDate(t) { var m = /(\d+)月(\d+)日（(.)）/.exec(t || ''); return m ? { month: +m[1], day: +m[2], dow: m[3] } : { month: 0, day: 0, dow: '' }; }
+function mk(name, qty, who, purchased) { SEQ += 1; return { id: 'i' + SEQ, name: name, qty: qty, who: who, purchased: purchased, server: purchased, sync: 'ok' }; }
+function initial() {
+  STORE_ICON = { 'スーパー': 'cart', 'ドラッグストア': 'pill' };
+  return {
+    tab: 'lists', view: 'home', seg: 'active', listId: null, filter: 'me',
+    online: true, failNext: false, syncing: false, failed: false, rejected: 0,
+    sheet: null, toast: '', staplesStore: 'スーパー',
+    add: { mode: 'manual', name: '', qty: 1, who: 'me', sel: {}, err: '' },
+    edit: null, carry: null, qa: '', qaErr: '', stSel: {}, stEdit: null, celeb: null, stQty: { 'スーパー|牛乳': 2, 'スーパー|納豆': 3 }, undo: null, flashId: null, sugOpen: false,
+    sub: null, hasMom: true, invite: false, requests: [], nick: '太郎', momNick: '花子', viewer: 'me', phoneW: 390, nickDraft: '', cr: null, cs: null, se: null, gdChecked: false,
+    staples: { 'スーパー': ['牛乳', '卵', '食パン', '納豆', '豆腐', 'トマト', 'ヨーグルト'], 'ドラッグストア': ['ティッシュ', '歯みがき粉', 'シャンプー'] },
+    lists: [
+      { id: 'L1', name: '11月23日（月）', store: 'スーパー', status: 'active', otherClosed: false, items: [mk('牛乳', 2, 'me', false), mk('卵', 1, 'me', false), mk('豆腐', 1, 'me', false), mk('食パン', 1, 'mom', false), mk('ヨーグルト', 2, 'mom', false), mk('玉ねぎ', 3, 'me', true), mk('バナナ', 1, 'mom', true)] },
+      { id: 'L2', name: '11月25日（水）', store: 'ドラッグストア', status: 'active', otherClosed: false, items: [mk('ティッシュ', 1, 'mom', false), mk('歯みがき粉', 1, 'me', false)] },
+      { id: 'H1', name: '11月16日（月）', store: 'スーパー', status: 'closed', closedAt: '11月16日（月）', otherClosed: false, items: [mk('牛乳', 1, 'me', true), mk('納豆', 2, 'mom', false), mk('トマト', 3, 'me', true)] },
+      { id: 'H2', name: '10月30日（金）', store: 'ドラッグストア', status: 'closed', closedAt: '10月30日（金）', otherClosed: false, items: [mk('ティッシュ', 2, 'mom', true), mk('シャンプー', 1, 'me', true)] }
+    ]
+  };
+}
+function cloneList(l) { var c = Object.assign({}, l); c.items = l.items.map(function (i) { return Object.assign({}, i); }); return c; }
+
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = initial(); }
+  componentWillUnmount() { clearTimeout(this._t); clearTimeout(this._s); clearTimeout(this._r); }
+  cur() { var id = this.state.listId; return this.state.lists.find(function (l) { return l.id === id; }); }
+  patchList(id, fn) { this.setState(function (s) { return { lists: s.lists.map(function (l) { return l.id === id ? fn(cloneList(l)) : l; }) }; }); }
+  say(msg, undo) { var self = this; this.setState({ toast: msg, undo: undo || null }); clearTimeout(this._t); this._t = setTimeout(function () { self.setState({ toast: '', undo: null }); }, undo ? 6000 : 3200); }
+  snapshot(id) { var l = this.state.lists.find(function (x) { return x.id === id; }); return { listId: id, items: l.items.map(function (i) { return Object.assign({}, i); }) }; }
+  doUndo() { var u = this.state.undo; if (!u) return; this.patchList(u.listId, function (L) { L.items = u.items; return L; }); clearTimeout(this._t); this.setState({ toast: '', undo: null, flashId: null }); }
+  flash(id) { var self = this; this.setState({ flashId: id }); clearTimeout(this._f); this._f = setTimeout(function () { self.setState({ flashId: null }); }, 1900); }
+  addOne(name, q) {
+    q = q || 1;
+    if (!this.state.online) { this.say('オフラインのため使えません'); return false; }
+    var s = this.state, l = this.cur(), who = s.filter === 'all' ? VIEWER : s.filter;
+    var ex = l.items.find(function (i) { return N(i.name) === N(name); });
+    if (ex && ex.qty + q > 999) { this.setState({ qaErr: '合計' + (ex.qty + q) + '：999を超えます' }); return false; }
+    var undo = this.snapshot(l.id), nw = ex ? null : mk(name, q, who, false);
+    this.patchList(l.id, function (L) { if (ex) { var it = L.items.find(function (i) { return i.id === ex.id; }); it.qty += q; it.purchased = false; it.server = false; it.sync = 'ok'; } else { L.items.push(nw); } return L; });
+    this.flash(ex ? ex.id : nw.id);
+    var hidden = ex ? (s.filter !== 'all' && ex.who !== s.filter) : false;
+    this.say(ex ? ex.name + ' ×' + (ex.qty + q) + (hidden ? '（担当 ' + lab(ex.who) + '）' : '（合算）') : name + (q > 1 ? ' ×' + q : '') + ' を追加', undo);
+    return true;
+  }
+  setAdd(p) { this.setState(function (s) { return { add: Object.assign({}, s.add, p) }; }); }
+  setEdit(p) { this.setState(function (s) { return { edit: Object.assign({}, s.edit, p) }; }); }
+
+  toggle(itemId) {
+    var l = this.cur(); if (!l || l.status !== 'active') return;
+    var online = this.state.online;
+    this.patchList(l.id, function (L) {
+      var it = L.items.find(function (i) { return i.id === itemId; });
+      it.purchased = !it.purchased;
+      if (online) { it.server = it.purchased; it.sync = 'ok'; } else { it.sync = it.purchased === it.server ? 'ok' : 'pending'; }
+      return L;
+    });
+  }
+  setOnline(v) {
+    if (!v) { clearTimeout(this._r); this.setState({ online: false, syncing: false }); return; }
+    this.setState({ online: true }, () => this.sync());
+  }
+  sync() {
+    var self = this, s = this.state;
+    var any = s.lists.some(function (l) { return l.items.some(function (i) { return i.sync !== 'ok'; }); });
+    var otherPending = s.lists.some(function (l) { return l.otherClosed && l.status === 'active'; });
+    if (!any && !otherPending) return;
+    if (s.failNext && any) {
+      this.setState(function (st) { return { failNext: false, failed: true, lists: st.lists.map(function (l) { var c = cloneList(l); c.items.forEach(function (i) { if (i.sync !== 'ok') i.sync = 'failed'; }); return c; }) }; });
+      clearTimeout(this._r); this._r = setTimeout(function () { if (self.state.online) self.sync(); }, 6000);
+      return;
+    }
+    this.setState({ syncing: true, failed: false });
+    clearTimeout(this._s);
+    this._s = setTimeout(function () {
+      if (!self.state.online) { self.setState({ syncing: false }); return; }
+      var rejected = 0;
+      var lists = self.state.lists.map(function (l) {
+        var c = cloneList(l);
+        if (c.otherClosed && c.status === 'active') {
+          c.items.forEach(function (i) { if (i.sync !== 'ok') { rejected += 1; i.purchased = i.server; i.sync = 'ok'; } });
+          c.status = 'closed'; c.closedAt = '11月23日（月）'; c.otherClosed = false;
+        } else {
+          c.items.forEach(function (i) { if (i.sync !== 'ok') { i.server = i.purchased; i.sync = 'ok'; } });
+        }
+        return c;
+      });
+      self.setState({ lists: lists, syncing: false, failed: false, rejected: rejected || self.state.rejected });
+      if (!rejected) self.say('送信しました');
+    }, 1400);
+  }
+  retry() { if (!this.state.online) { this.say('オフラインのため使えません'); return; } clearTimeout(this._r); this.setState({ failNext: false }, () => this.sync()); }
+  otherClose() {
+    var l = this.cur();
+    if (!l || l.status !== 'active' || this.state.view !== 'list') { this.say('利用中のリストを開いてから使ってください。'); return; }
+    if (this.state.online) {
+      this.patchList(l.id, function (L) { L.status = 'closed'; L.closedAt = '11月23日（月）'; return L; });
+      this.setState({ sheet: null });
+      this.say(NICK[otherW()] + 'がリストを終了しました');
+    } else {
+      this.patchList(l.id, function (L) { L.otherClosed = true; return L; });
+      this.say('（再現）' + NICK[otherW()] + 'の端末で終了。この端末はまだ知らない');
+    }
+  }
+
+  openAdd() { this.setState({ sheet: 'add', add: { mode: 'staple', name: '', qty: 1, who: 'me', sel: {}, err: '' } }); }
+  applyAdd(L, name, qty, who) {
+    var ex = L.items.find(function (i) { return N(i.name) === N(name); });
+    if (ex) { ex.qty += qty; ex.purchased = false; ex.server = false; ex.sync = 'ok'; return ex; }
+    L.items.push(mk(name, qty, who, false)); return null;
+  }
+  submitManual() {
+    var l = this.cur(), a = this.state.add, name = a.name.trim();
+    if (LEN(name) < 1) { this.setAdd({ err: '商品名を入力' }); return; }
+    if (LEN(name) > 100) { this.setAdd({ err: '100文字以内（いま' + LEN(name) + '文字）' }); return; }
+    var ex = l.items.find(function (i) { return N(i.name) === N(name); });
+    if (ex && ex.qty + a.qty > 999) { this.setAdd({ err: '合計' + (ex.qty + a.qty) + '：999を超えます' }); return; }
+    var self = this, msg;
+    this.patchList(l.id, function (L) { var m = self.applyAdd(L, name, a.qty, a.who); msg = m ? m.name + ' ×' + m.qty + '（合算）' : name + ' を追加'; return L; });
+    this.setState({ sheet: null });
+    setTimeout(function () { self.say(msg); }, 0);
+  }
+  submitStaple() {
+    var l = this.cur(), sel = this.state.add.sel, keys = Object.keys(sel);
+    if (!keys.length) return;
+    for (var k = 0; k < keys.length; k++) {
+      var nm = keys[k], ex = l.items.find(function (i) { return N(i.name) === N(nm); });
+      if (ex && ex.qty + sel[nm].qty > 999) { this.setAdd({ err: nm + '：合計が999を超えます' }); return; }
+    }
+    var self = this;
+    this.patchList(l.id, function (L) { keys.forEach(function (nm) { self.applyAdd(L, nm, sel[nm].qty, sel[nm].who); }); return L; });
+    this.setState({ sheet: null });
+    this.say(keys.length + '件を追加');
+  }
+
+  quickSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!this.state.online) { this.say('オフラインのため使えません'); return; }
+    var name = this.state.qa.trim();
+    if (LEN(name) < 1) return;
+    if (LEN(name) > 100) { this.setState({ qaErr: '100文字以内（いま' + LEN(name) + '文字）' }); return; }
+    if (this.addOne(name)) this.setState({ qa: '', qaErr: '' });
+  }
+  addStaplesToList(id) {
+    var s = this.state, names = Object.keys(s.stSel), L0 = s.lists.find(function (x) { return x.id === id; });
+    var add = names.filter(function (nm) { return !L0.items.some(function (i) { return N(i.name) === N(nm); }); });
+    var skip = names.length - add.length;
+    this.setState({ stSel: {}, sheet: null });
+    if (!add.length) { this.say('すべてリストにあります'); return; }
+    var undo = this.snapshot(id), nws = add.map(function (nm) { return mk(nm, 1, VIEWER, false); });
+    this.patchList(id, function (L) { L.items = L.items.concat(nws); return L; });
+    this.say(L0.name + ' に' + add.length + '件' + (skip ? '（' + skip + '件はリストにあり）' : ''), undo);
+  }
+  saveStaple() {
+    var e = this.state.stEdit, name = e.name.trim();
+    if (LEN(name) < 1) { this.setState({ stEdit: Object.assign({}, e, { err: '商品名を入力' }) }); return; }
+    if (LEN(name) > 100) { this.setState({ stEdit: Object.assign({}, e, { err: '100文字以内' }) }); return; }
+    var st = Object.assign({}, this.state.staples), arr = (st[e.store] || []).slice();
+    var dup = arr.find(function (x) { return N(x) === N(name) && !(e.mode === 'edit' && x === e.orig && e.store === e.origStore); });
+    if (dup) { this.setState({ stEdit: Object.assign({}, e, { err: '「' + dup + '」と重複しています' }) }); return; }
+    if (e.mode === 'edit') {
+      if (e.store === e.origStore) { arr[arr.indexOf(e.orig)] = name; }
+      else { st[e.origStore] = st[e.origStore].filter(function (x) { return x !== e.orig; }); arr.push(name); }
+    } else { arr.push(name); }
+    st[e.store] = arr;
+    var sq = Object.assign({}, this.state.stQty); if (e.mode === 'edit') delete sq[e.origStore + '|' + e.orig]; sq[e.store + '|' + name] = e.qty || 1;
+    this.setState({ staples: st, stQty: sq, sheet: null, stEdit: null, staplesStore: e.store, stSel: {} });
+    this.say(e.mode === 'edit' ? '保存しました' : '定番に追加');
+  }
+  doDelStaple() {
+    var e = this.state.stEdit, st = Object.assign({}, this.state.staples);
+    st[e.origStore] = st[e.origStore].filter(function (x) { return x !== e.orig; });
+    var sq = Object.assign({}, this.state.stQty); delete sq[e.origStore + '|' + e.orig];
+    this.setState({ staples: st, stQty: sq, sheet: null, stEdit: null, stSel: {} }); this.say('削除しました');
+  }
+  storeUsage(name) { var s = this.state; return s.lists.filter(function (l) { return l.store === name; }).length + (s.staples[name] || []).length; }
+  saveStore() {
+    var s = this.state, e = s.se, name = e.name.trim();
+    if (LEN(name) < 1 || LEN(name) > 50) { this.setState({ se: Object.assign({}, e, { err: '名前は1〜50文字' }) }); return; }
+    if (Object.keys(s.staples).some(function (k) { return k === name && !(e.mode === 'edit' && k === e.orig); })) { this.setState({ se: Object.assign({}, e, { err: '同じ名前の購入先があります' }) }); return; }
+    var st = {};
+    if (e.mode === 'edit') {
+      Object.keys(s.staples).forEach(function (k) { st[k === e.orig ? name : k] = s.staples[k]; });
+      delete STORE_ICON[e.orig]; STORE_ICON[name] = e.icon;
+      var lists = s.lists.map(function (l) { return l.store === e.orig ? Object.assign({}, l, { store: name }) : l; });
+      var sq = {}; Object.keys(s.stQty).forEach(function (k) { var p = k.split('|'); sq[(p[0] === e.orig ? name : p[0]) + '|' + p[1]] = s.stQty[k]; });
+      this.setState({ staples: st, stQty: sq, lists: lists, staplesStore: s.staplesStore === e.orig ? name : s.staplesStore, sheet: e.back || null, se: null });
+      this.say('保存しました');
+    } else {
+      st = Object.assign({}, s.staples); st[name] = []; STORE_ICON[name] = e.icon;
+      var upd = { staples: st, sheet: e.back || null, se: null };
+      if (!s.staplesStore) upd.staplesStore = name;
+      if (e.back === 'create') { upd.cr = Object.assign({}, s.cr, { store: name, name: s.cr.touched ? s.cr.name : autoName(name, s.cr.date) }); }
+      this.setState(upd);
+      this.say('購入先を追加');
+    }
+  }
+  doCreate() {
+    var c = this.state.cr, name = (c.touched && c.name.trim()) || jpDate(c.date);
+    if (!c.store) { this.setState({ cr: Object.assign({}, c, { err: 'お店を選択' }) }); return; }
+    if (LEN(name) > 50) { this.setState({ cr: Object.assign({}, c, { err: 'リスト名は1〜50文字' }) }); return; }
+    var nl = { id: 'N' + Date.now(), name: name, store: c.store, status: 'active', otherClosed: false, items: [] };
+    this.setState(function (s) { return { lists: [nl].concat(s.lists), listId: nl.id, view: 'list', filter: VIEWER, sheet: null, cr: null, seg: 'active', sugOpen: false, qa: '', qaErr: '' }; });
+    this.say('リストを作成');
+  }
+  doRemove() {
+    var lists = this.state.lists.map(function (l) { if (l.status !== 'active') return l; var c = cloneList(l); c.items.forEach(function (i) { if (i.who === 'mom') i.who = 'me'; }); return c; });
+    this.setState({ lists: lists, hasMom: false, sheet: null, filter: 'me' });
+    this.say('花子をグループから外しました');
+  }
+  openItem(it) {
+    var l = this.cur();
+    if (l.status === 'active' && !this.state.online) { this.say('オフラインのため使えません'); return; }
+    this.setState({ sheet: 'edit', edit: { id: it.id, name: it.name, orig: it.name, qty: it.qty, who: it.who, purchased: it.purchased, confirmDel: false, err: '' } });
+  }
+  saveEdit() {
+    var l = this.cur(), e = this.state.edit, name = e.name.trim();
+    if (LEN(name) < 1) { this.setEdit({ err: '商品名を入力' }); return; }
+    if (LEN(name) > 100) { this.setEdit({ err: '100文字以内' }); return; }
+    var dup = l.items.find(function (i) { return i.id !== e.id && N(i.name) === N(name); });
+    if (dup) { this.setEdit({ err: '「' + dup.name + '」と重複しています' }); return; }
+    this.patchList(l.id, function (L) { var it = L.items.find(function (i) { return i.id === e.id; }); it.name = name; it.qty = e.qty; it.who = e.who; return L; });
+    this.setState({ sheet: null }); this.say('保存しました');
+  }
+  doDelete() {
+    var l = this.cur(), e = this.state.edit;
+    this.patchList(l.id, function (L) { L.items = L.items.filter(function (i) { return i.id !== e.id; }); return L; });
+    this.setState({ sheet: null }); this.say('削除しました');
+  }
+  toStaple() {
+    if (!this.state.online) { this.say('オフラインのため使えません'); return; }
+    var l = this.cur(), e = this.state.edit, store = l.store, name = e.orig;
+    var arr = this.state.staples[store] || [];
+    if (arr.some(function (x) { return N(x) === N(name); })) { this.say('定番に登録済みです'); return; }
+    var st = Object.assign({}, this.state.staples); st[store] = arr.concat([name]);
+    this.setState({ staples: st, sheet: null });
+    this.say('定番に登録しました');
+  }
+
+  startCarry() {
+    if (!this.state.online) { this.say('オフラインのため使えません'); return; }
+    var l = this.cur(), unp = l.items.filter(function (i) { return !i.purchased; });
+    if (!unp.length) { this.setState({ sheet: null }); this.say('未購入の商品がありません'); return; }
+    var sel = {}; unp.forEach(function (i) { sel[i.id] = true; });
+    this.setState({ sheet: null, view: 'carry', carry: { from: l.id, name: autoName(l.store, TODAY), sel: sel, err: '' } });
+  }
+  createCarry() {
+    var c = this.state.carry, l = this.cur(), name = (c.custom && c.custom.trim()) || jpDate(addDays(TODAY, 1));
+    var picked = l.items.filter(function (i) { return !i.purchased && c.sel[i.id]; });
+    if (LEN(name) > 50) { this.setState({ carry: Object.assign({}, c, { err: '名前は50文字以内' }) }); return; }
+    if (!picked.length) { this.setState({ carry: Object.assign({}, c, { err: '1つ以上選択' }) }); return; }
+    var nl = { id: 'N' + Date.now(), name: name, store: l.store, status: 'active', otherClosed: false, items: picked.map(function (i) { return mk(i.name, i.qty, i.who, false); }) };
+    this.setState(function (s) { return { lists: [nl].concat(s.lists), listId: nl.id, view: 'list', filter: VIEWER, carry: null, seg: 'active' }; });
+    this.say('新しいリストを作成');
+  }
+  doClose() {
+    var l = this.cur();
+    this.patchList(l.id, function (L) { L.status = 'closed'; L.closedAt = '11月23日（月）'; return L; });
+    var n = l.items.filter(function (i) { return i.purchased; }).length, r = l.items.length - n;
+    this.setState({ sheet: null, celeb: { n: n, remain: r } });
+  }
+  doDelHist() {
+    var l = this.cur();
+    var wasActive = l.status === 'active';
+    this.setState(function (s) { return { lists: s.lists.filter(function (x) { return x.id !== l.id; }), sheet: null, view: 'home', seg: wasActive ? 'active' : 'closed', listId: null }; });
+    this.say(wasActive ? 'リストを削除しました' : '履歴を削除しました');
+  }
+
+  renderVals() {
+    VIEWER = this.state.viewer; NICK = { me: this.state.nick, mom: this.state.momNick };
+    var self = this, s = this.state, l = this.cur();
+    var active = s.lists.filter(function (x) { return x.status === 'active'; });
+    var closed = s.lists.filter(function (x) { return x.status === 'closed'; });
+    var shown = s.seg === 'active' ? active : closed;
+    var homeLists = shown.map(function (L) {
+      var u = L.items.filter(function (i) { return !i.purchased; }).length;
+      var tot = L.items.length, b = tot - u, I = ic(L.store);
+      return { icon: I.d, iconLabel: I.label, name: L.name, isActive: L.status === 'active', remain: u, pct: (tot ? Math.round(b / tot * 100) : 0) + '%', progLabel: tot + '品中' + b + '品購入済み',
+        sub: L.status === 'active' ? L.store + ' · ' + b + '/' + tot + ' 品' : L.closedAt + 'に終了 · ' + L.store + ' · ' + b + '/' + tot + ' 品', hasPending: L.items.some(function (i) { return i.sync !== 'ok'; }), open: function () { self.setState({ listId: L.id, view: 'list', filter: VIEWER, sheet: null, rejected: 0, qa: '', qaErr: '', sugOpen: false }); } };
+    });
+    var v = {
+      isHome: s.view === 'home', isList: s.view === 'list' && !!l, isCarry: s.view === 'carry' && !!l,
+      tabLists: s.tab === 'lists', tabStaples: s.tab === 'staples', tabSettings: s.tab === 'settings',
+      tabListsCls: s.tab === 'lists' ? 'on' : '', tabStaplesCls: s.tab === 'staples' ? 'on' : '', tabSettingsCls: s.tab === 'settings' ? 'on' : '',
+      goLists: function () { self.setState({ tab: 'lists' }); }, goStaples: function () { self.setState({ tab: 'staples' }); }, goSettings: function () { self.setState({ tab: 'settings' }); },
+      offline: !s.online, toast: s.toast,
+      segActiveCls: s.seg === 'active' ? 'on' : '', segClosedCls: s.seg === 'closed' ? 'on' : '',
+      pickActive: function () { self.setState({ seg: 'active' }); }, pickClosed: function () { self.setState({ seg: 'closed' }); },
+      segIsActive: s.seg === 'active', segIsClosed: s.seg === 'closed',
+      histGroups: (function () {
+        var sorted = closed.slice().sort(function (a, b) { var x = parseDate(a.closedAt), y = parseDate(b.closedAt); return (y.month * 100 + y.day) - (x.month * 100 + x.day); });
+        var gs = [];
+        sorted.forEach(function (L) {
+          var d = parseDate(L.closedAt), key = '2026年' + d.month + '月', g = gs[gs.length - 1];
+          if (!g || g.month !== key) { g = { month: key, items: [] }; gs.push(g); }
+          var tot = L.items.length, b = L.items.filter(function (i) { return i.purchased; }).length;
+          g.items.push({ name: L.name, store: L.store, icon: ic(L.store).d, day: d.day + '日', dow: '（' + d.dow + '）', bought: b, total: tot, open: function () { self.setState({ listId: L.id, view: 'list', filter: VIEWER, sheet: null, rejected: 0, qa: '', qaErr: '', sugOpen: false }); } });
+        });
+        return gs;
+      })(),
+      activeCount: active.length, closedCount: closed.length, homeLists: homeLists, homeEmpty: homeLists.length === 0,
+      homeEmptyTitle: s.seg === 'active' ? '利用中のリストはまだありません' : '履歴はまだありません',
+      homeEmptyBody: '',
+      storeChips: Object.keys(s.staples).map(function (k) { return { icon: ic(k).d, name: k, on: s.staplesStore === k, cls: s.staplesStore === k ? 'chip on' : 'chip', pick: function () { self.setState({ staplesStore: k, stSel: {} }); } }; }),
+      staplesStore: s.staplesStore,
+      stapleItems: (s.staples[s.staplesStore] || []).map(function (nm) { var on = !!s.stSel[nm], q = s.stQty[s.staplesStore + '|' + nm] || 1; return { qty: q, multi: q > 1, name: nm, on: on, boxCls: on ? 'sbox on' : 'sbox', label: nm + (on ? '、選択中' : '、選択する'),
+        toggle: function () { var sel = Object.assign({}, s.stSel); if (sel[nm]) delete sel[nm]; else sel[nm] = true; self.setState({ stSel: sel }); },
+        edit: function () { if (!s.online) { self.say('オフラインのため使えません'); return; } self.setState({ sheet: 'staple', stEdit: { mode: 'edit', orig: nm, origStore: s.staplesStore, name: nm, store: s.staplesStore, qty: q, err: '', confirmDel: false } }); } }; }),
+      stEmpty: (s.staples[s.staplesStore] || []).length === 0,
+      stSelCount: Object.keys(s.stSel).length, hasStSel: Object.keys(s.stSel).length > 0, noStSel: Object.keys(s.stSel).length === 0,
+      clearStSel: function () { self.setState({ stSel: {} }); },
+      openToList: function () { if (!s.online) { self.say('オフラインのため使えません'); return; } var c = s.lists.filter(function (x) { return x.status === 'active' && x.store === s.staplesStore; }); if (c.length === 1) self.addStaplesToList(c[0].id); else self.setState({ sheet: 'toList' }); },
+      toListOptions: s.lists.filter(function (x) { return x.status === 'active' && x.store === s.staplesStore; }).map(function (x) { return { icon: ic(x.store).d, name: x.name, sub: x.store + ' · 残り ' + x.items.filter(function (i) { return !i.purchased; }).length, pick: function () { self.addStaplesToList(x.id); } }; }),
+      toListNone: !s.lists.some(function (x) { return x.status === 'active' && x.store === s.staplesStore; }),
+      sheetToList: s.sheet === 'toList', sheetStaple: s.sheet === 'staple' && !!s.stEdit,
+      newStaple: function () { if (!s.online) { self.say('オフラインのため使えません'); return; } self.setState({ sheet: 'staple', stEdit: { mode: 'new', orig: '', origStore: s.staplesStore, name: '', store: s.staplesStore, qty: 1, err: '', confirmDel: false } }); },
+      stapleList: s.staples[s.staplesStore] || [],
+      proto: function () { self.say('（プロトタイプ）別ボードを参照'); },
+      onlineBtnCls2: s.online ? 'btn pri' : 'btn pri offl', menuCls: s.online ? 'menuitem' : 'menuitem dim',
+      createTap: function () { if (!s.online) { self.say('オフラインのため使えません'); return; } var st = s.tab === 'staples' ? s.staplesStore : (Object.keys(s.staples)[0] || ''); self.setState({ sheet: 'create', cr: { store: st, date: addDays(TODAY, 1), name: autoName(st, addDays(TODAY, 1)), touched: false, err: '' } }); },
+      openStaples: function () { if (!s.online) self.say('オフラインのため使えません'); else self.openAdd(); },
+      fabCls: s.online ? 'fab' : 'fab offl', qaCls: s.online ? 'qa' : 'qa offl',
+      qaName: s.qa, qaErr: s.qaErr, qaEmpty: !s.qa.trim() || !s.online,
+      onQa: function (e) { self.setState({ qa: e.target.value, qaErr: '' }); },
+      qaTapOffline: function () { if (!s.online) self.say('オフラインのため使えません'); },
+      qaKey: function (e) { if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); self.quickSubmit(); } },
+      qaFocus: function () { if (s.online) self.setState({ sugOpen: true }); },
+      closeSug: function () { self.setState({ sugOpen: false }); },
+      hasUndo: !!s.undo, doUndo: function () { self.doUndo(); },
+      quickSubmit: function (e) { self.quickSubmit(e); },
+      openChangeStore: function () { if (!s.online) { self.say('オフラインのため使えません'); return; } var l0 = self.cur(); self.setState({ sheet: 'changeStore', cs: l0.store }); },
+      back: function () { self.setState({ view: 'home', sheet: null }); }, backToList: function () { self.setState({ view: 'list', carry: null }); },
+      openMenu: function () { self.setState({ sheet: 'menu' }); }, closeSheet: function () { self.setState({ sheet: null }); },
+      openAdd: function () { self.openAdd(); }, startCarry: function () { self.startCarry(); },
+      askClose: function () { if (!s.online) { self.say('オフラインのため使えません'); return; } self.setState({ sheet: 'close' }); }, doClose: function () { self.doClose(); },
+      askDelHist: function () { if (!s.online) { self.say('オフラインのため使えません'); return; } self.setState({ sheet: 'delHist' }); }, doDelHist: function () { self.doDelHist(); },
+      retry: function () { self.retry(); }, ackRejected: function () { self.setState({ rejected: 0 }); },
+      sheetAdd: s.sheet === 'add', sheetEdit: s.sheet === 'edit', sheetMenu: s.sheet === 'menu', sheetClose: s.sheet === 'close', sheetDelHist: s.sheet === 'delHist',
+      closeSub: s.online ? '終了すると閲覧のみになり、再開できません' : '通信が必要です',
+      onlineBtn: s.online ? '通信：オン（タップで切る）' : '通信：オフ（タップで戻す）', onlineBtnCls: s.online ? 'dbtn' : 'dbtn on',
+      toggleOnline: function () { self.setOnline(!s.online); },
+      otherClose: function () { self.otherClose(); },
+      failBtn: s.failNext ? '次の送信を失敗させる：有効' : '次の送信を失敗させる', armFail: function () { self.setState({ failNext: !s.failNext }); },
+      reset: function () { clearTimeout(self._s); clearTimeout(self._r); self.setState(initial()); },
+      demoState: (l && l.otherClosed ? '状態：花子の端末でこのリストは終了済み（この端末は未取得）。' : '') + (s.failNext ? '次の送信は失敗します。' : '')
+    };
+    v.labMe = lab('me'); v.labMom = lab('mom'); v.ordMe = VIEWER === 'me' ? 0 : 1; v.ordMom = VIEWER === 'me' ? 1 : 0;
+    v.phoneW = s.phoneW; v.widths = [320, 375, 390, 414].map(function (n) { return { n: n, on: s.phoneW === n, cls: s.phoneW === n ? 'dbtn on' : 'dbtn', pick: function () { self.setState({ phoneW: n }); } }; });
+    v.showCeleb = !!s.celeb; v.celebN = s.celeb ? s.celeb.n : 0; v.celebRemain = s.celeb ? s.celeb.remain : 0; v.celebHasRemain = !!s.celeb && s.celeb.remain > 0;
+    v.celebSub = s.celeb && s.celeb.remain > 0 ? 'カゴに入れました。履歴に残しました' : 'ぜんぶカゴに入れました。履歴に残しました';
+    v.closeCeleb = function () { self.setState({ celeb: null, view: 'home', seg: 'active' }); };
+    v.celebCarry = function () { self.setState({ celeb: null }); self.startCarry(); };
+    var inlineCtx = s.view === 'list' && !sub && !s.sheet;
+    v.toastInline = !!s.toast && inlineCtx; v.toastFloat = !!s.toast && !inlineCtx;
+    var sub = s.sub, storeNames = Object.keys(s.staples);
+    v.isHome = v.isHome && !sub;
+    v.isStores = sub === 'stores'; v.isMembers = sub === 'members'; v.isAccount = sub === 'account'; v.isGroupDelete = sub === 'groupDelete';
+    v.isDeleting = sub === 'deleting'; v.isWelcome = sub === 'welcome'; v.isLogin = sub === 'login'; v.isData = sub === 'data';
+    var goSub = function (k) { return function () { if (!s.online && k !== 'data') { self.say('オフラインのため使えません'); return; } self.setState({ sub: k, sheet: null }); }; };
+    v.toSettings = function () { self.setState({ sub: null, sheet: null, tab: 'settings' }); };
+    v.goMembers = goSub('members'); v.goStores = goSub('stores'); v.goAccount = goSub('account'); v.goData = goSub('data');
+    v.memberCount = s.hasMom ? 2 : 1; v.storeCount = storeNames.length; v.nick = NICK[VIEWER]; v.nickInitial = NICK[VIEWER].charAt(0); v.isAdminView = VIEWER === 'me'; v.isMemberView = VIEWER !== 'me';
+    v.otherName = NICK[otherW()]; v.memMe = NICK.me + (VIEWER === 'me' ? '（自分）' : ''); v.memMom = NICK.mom + (VIEWER === 'mom' ? '（自分）' : ''); v.iniMe = ini('me'); v.iniMom = ini('mom'); v.avMe = 'av ' + (VIEWER === 'me' ? 'me' : 'mom'); v.avMom = 'av ' + (VIEWER === 'mom' ? 'me' : 'mom'); v.hasMom = s.hasMom;
+    v.storeRows = storeNames.map(function (k) { var u = self.storeUsage(k); return { name: k, icon: ic(k).d, usage: u ? '使用中' : '未使用', edit: function () { self.setState({ sheet: 'storeEdit', se: { mode: 'edit', orig: k, name: k, icon: STORE_ICON[k] || 'store', err: '', confirmDel: false, back: null } }); } }; });
+    v.noStores = storeNames.length === 0;
+    v.newStore = function () { self.setState({ sheet: 'storeEdit', se: { mode: 'new', orig: '', name: '', icon: 'store', err: '', confirmDel: false, back: null } }); };
+    v.newStoreFromCreate = function () { self.setState({ sheet: 'storeEdit', se: { mode: 'new', orig: '', name: '', icon: 'store', err: '', confirmDel: false, back: 'create' } }); };
+    var e2 = s.se;
+    v.sheetStoreEdit = s.sheet === 'storeEdit' && !!e2;
+    if (e2) {
+      v.seTitle = e2.mode === 'edit' ? '購入先を編集' : '購入先を追加'; v.seName = e2.name; v.seOrig = e2.orig; v.seErr = e2.err; v.seSave = e2.mode === 'edit' ? '保存' : '追加';
+      v.onSeName = function (ev) { self.setState({ se: Object.assign({}, e2, { name: ev.target.value, err: '' }) }); };
+      v.seIcons = Object.keys(ICONS).map(function (k) { return { d: ICONS[k][1], label: ICONS[k][0], on: e2.icon === k, cls: e2.icon === k ? 'on' : '', pick: function () { self.setState({ se: Object.assign({}, e2, { icon: k }) }); } }; });
+      v.seConfirm = e2.confirmDel; v.seNoConfirm = !e2.confirmDel; v.seCanDel = e2.mode === 'edit';
+      v.saveStore = function () { self.saveStore(); };
+      v.askDelStore = function () { if (self.storeUsage(e2.orig)) { self.say('使用中のため削除できません'); return; } self.setState({ se: Object.assign({}, e2, { confirmDel: true }) }); };
+      v.cancelDelStore = function () { self.setState({ se: Object.assign({}, e2, { confirmDel: false }) }); };
+      v.doDelStore = function () { var st = Object.assign({}, s.staples); delete st[e2.orig]; delete STORE_ICON[e2.orig]; self.setState({ staples: st, sheet: null, se: null, staplesStore: Object.keys(st)[0] || '' }); self.say('削除しました'); };
+    }
+    var cr = s.cr;
+    v.sheetCreate = s.sheet === 'create' && !!cr;
+    if (cr) {
+      v.crStores = storeNames.map(function (k) { return { name: k, icon: ic(k).d, on: cr.store === k, cls: cr.store === k ? 'chip on' : 'chip', pick: function () { self.setState({ cr: Object.assign({}, cr, { store: k, name: cr.touched ? cr.name : autoName(k, cr.date), err: '' }) }); } }; });
+      v.crName = cr.touched ? cr.name : ''; v.crErr = cr.err; v.crDate = cr.date; v.crPlaceholder = jpDate(cr.date);
+      v.crNameOpen = !!cr.nameOpen || !!cr.touched; v.crNameClosed = !v.crNameOpen;
+      v.openCrName = function () { self.setState({ cr: Object.assign({}, cr, { nameOpen: true }) }); };
+      var setDate = function (iso) { if (!iso) return; self.setState({ cr: Object.assign({}, cr, { date: iso, calOpen: false, name: cr.touched ? cr.name : autoName(cr.store, iso), err: '' }) }); };
+      v.crDays = [['明日', 1]].map(function (p) { var iso = addDays(TODAY, p[1]), on = cr.date === iso; return { label: p[0] + ' ' + jpDate(iso).replace(/^\d+月/, ''), on: on, cls: on ? 'chip on' : 'chip', pick: function () { setDate(iso); } }; });
+      var quick = [addDays(TODAY, 1)];
+      var other = quick.indexOf(cr.date) < 0;
+      v.crOtherOn = other; v.crOtherCls = other ? 'chip on' : 'chip'; v.crOtherLabel = other ? jpDate(cr.date).replace(/^\d+月/, '') : 'ほかの日';
+      v.crCalOpen = !!cr.calOpen;
+      var cm = cr.calMonth || TODAY.slice(0, 7);
+      v.toggleCal = function () { self.setState({ cr: Object.assign({}, cr, { calOpen: !cr.calOpen, calMonth: cr.date.slice(0, 7) }) }); };
+      var y = +cm.slice(0, 4), mo = +cm.slice(5, 7);
+      v.calTitle = y + '年' + mo + '月';
+      v.calPrevOff = cm <= TODAY.slice(0, 7);
+      var shift = function (n) { var d = new Date(y, mo - 1 + n, 1); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2); };
+      v.calPrev = function () { self.setState({ cr: Object.assign({}, cr, { calMonth: shift(-1) }) }); };
+      v.calNext = function () { self.setState({ cr: Object.assign({}, cr, { calMonth: shift(1) }) }); };
+      var first = new Date(y, mo - 1, 1).getDay(), days = new Date(y, mo, 0).getDate(), cells = [];
+      for (var b = 0; b < first; b++) cells.push({ label: '', cls: 'blank', off: true, aria: '', on: false, pick: function () {} });
+      for (var dd = 1; dd <= days; dd++) { (function (dd) { var iso = cm + '-' + ('0' + dd).slice(-2), on = iso === cr.date, past = iso < TODAY;
+        cells.push({ label: dd, off: past, on: on, aria: jpDate(iso), cls: (on ? 'on' : '') + (iso === TODAY ? ' today' : ''),
+          pick: function () { self.setState({ cr: Object.assign({}, cr, { date: iso, calOpen: false, name: cr.touched ? cr.name : autoName(cr.store, iso), err: '' }) }); } }); })(dd); }
+      v.calCells = cells;
+      v.onCrName = function (ev) { self.setState({ cr: Object.assign({}, cr, { name: ev.target.value, touched: true, err: '' }) }); };
+      v.doCreate = function () { self.doCreate(); };
+    }
+    v.sheetChangeStore = s.sheet === 'changeStore';
+    v.csStores = storeNames.map(function (k) { return { name: k, icon: ic(k).d, on: s.cs === k, cls: s.cs === k ? 'chip on' : 'chip', pick: function () { self.setState({ cs: k }); } }; });
+    v.doChangeStore = function () { var l0 = self.cur(); self.patchList(l0.id, function (L) { L.store = s.cs; return L; }); self.setState({ sheet: null }); self.say('購入先を変更しました'); };
+    v.canInvite = !s.hasMom && VIEWER === 'me'; v.hasInvite = s.invite; v.noInvite = !s.invite;
+    v.issueInvite = function () { self.setState({ invite: true, requests: [] }); self.say('招待リンクを発行'); };
+    v.shareInvite = function () { self.say('（端末の共有画面が開きます）'); };
+    v.copyInvite = function () { self.say('コピーしました'); };
+    v.revokeInvite = function () { self.setState({ invite: false, requests: [] }); self.say('招待リンクを取り消しました'); };
+    v.reqCount = s.requests.length; v.noReq = s.requests.length === 0;
+    v.reqRows = s.requests.map(function (q, idx) { return { name: q.name, email: q.email,
+      approve: function () { self.setState({ hasMom: true, invite: false, requests: [] }); self.say(q.name + 'が参加しました'); },
+      reject: function () { self.setState({ requests: s.requests.filter(function (_, j) { return j !== idx; }) }); self.say('拒否しました'); } }; });
+    v.toggleViewer = function () { if (!s.hasMom) { self.say('花子がグループにいません'); return; } var nv = s.viewer === 'me' ? 'mom' : 'me'; self.setState({ viewer: nv, filter: nv, sheet: null, sub: null, undo: null, toast: '' }); };
+    v.viewerBtn = s.viewer === 'me' ? '表示：自分（太郎）の端末 → 花子の端末に切替' : '表示：花子の端末 → 自分（太郎）の端末に切替'; v.viewerBtnCls = s.viewer === 'me' ? 'dbtn' : 'dbtn on';
+    v.demoRequest = function () { if (s.hasMom) { self.say('先に設定 › メンバーで花子を外してください'); return; } if (!s.invite) { self.say('先に招待リンクを発行してください'); return; } if (s.requests.length) { self.say('申請は届いています'); return; } self.setState({ requests: [{ name: '花子', email: 'hanako@example.com' }] }); self.say('参加申請が届きました'); };
+    v.sheetRemove = s.sheet === 'remove'; v.askRemove = function () { self.setState({ sheet: 'remove' }); };
+    v.momActiveCount = s.lists.filter(function (l) { return l.status === 'active'; }).reduce(function (n, l) { return n + l.items.filter(function (i) { return i.who === 'mom'; }).length; }, 0);
+    v.doRemove = function () { self.doRemove(); };
+    v.sheetNick = s.sheet === 'nick'; v.nickDraft = s.nickDraft;
+    v.openNick = function () { self.setState({ sheet: 'nick', nickDraft: NICK[VIEWER] }); };
+    v.onNick = function (ev) { self.setState({ nickDraft: ev.target.value }); };
+    v.onNickDirect = function (ev) { self.setState({ nick: ev.target.value }); };
+    v.saveNick = function () { var n = s.nickDraft.trim(); if (!n) return; self.setState(VIEWER === 'me' ? { nick: n, sheet: null } : { momNick: n, sheet: null }); self.say('保存しました'); };
+    v.sheetLogout = s.sheet === 'logout'; v.askLogout = function () { self.setState({ sheet: 'logout' }); };
+    v.doLogout = function () { self.setState({ sheet: null, sub: 'login' }); };
+    v.login = function () { self.setState({ sub: null, tab: 'lists', view: 'home' }); };
+    v.goGroupDelete = function () { self.setState({ sub: 'groupDelete', gdChecked: false }); };
+    v.accountBlocked = function () { self.say(VIEWER === 'me' ? '先にグループを削除してください' : '先にグループから抜けてください'); };
+    v.accTitle = VIEWER === 'me' ? '先にグループの削除が必要です' : '先にグループから抜ける必要があります'; v.accSub = VIEWER === 'me' ? '管理者のため' : 'メンバーのため';
+    v.gdLists = s.lists.length; v.gdStaples = storeNames.reduce(function (n, k) { return n + s.staples[k].length; }, 0);
+    v.gdChecked = s.gdChecked; v.gdBoxCls = s.gdChecked ? 'sbox on' : 'sbox';
+    v.gdToggle = function () { self.setState({ gdChecked: !s.gdChecked }); };
+    v.gdBtnCls = s.gdChecked ? 'btn dan' : 'btn dan offl';
+    v.doGroupDelete = function () { if (!s.gdChecked) { self.say('確認にチェックを入れてください'); return; } self.setState({ sub: 'deleting' }); setTimeout(function () { STORE_ICON = {}; self.setState({ sub: 'welcome', lists: [], staples: {}, staplesStore: '', hasMom: false, invite: false, requests: [], listId: null, view: 'home', tab: 'lists', seg: 'active' }); }, 1600); };
+    v.createGroup = function () { if (!s.nick.trim()) { self.say('呼び名を入力'); return; } self.setState({ sub: null, tab: 'lists', view: 'home' }); self.say('グループを作成しました'); };
+    var se = s.stEdit;
+    if (se) {
+      v.stQ = se.qty || 1; v.stQMin = v.stQ <= 1; v.stQMax = v.stQ >= 999;
+      v.stQDec = function () { self.setState({ stEdit: Object.assign({}, se, { qty: Math.max(1, (se.qty || 1) - 1) }) }); };
+      v.stQInc = function () { self.setState({ stEdit: Object.assign({}, se, { qty: Math.min(999, (se.qty || 1) + 1) }) }); };
+      v.stTitle = se.mode === 'edit' ? '定番を編集' : '定番を追加'; v.stName = se.name; v.stOrig = se.orig; v.stErr = se.err;
+      v.stSaveLabel = se.mode === 'edit' ? '保存' : '定番に追加';
+      v.onStName = function (e) { self.setState({ stEdit: Object.assign({}, se, { name: e.target.value, err: '' }) }); };
+      v.stStoreChips = Object.keys(s.staples).map(function (k) { return { icon: ic(k).d, name: k, on: se.store === k, cls: se.store === k ? 'chip on' : 'chip', pick: function () { self.setState({ stEdit: Object.assign({}, se, { store: k, err: '' }) }); } }; });
+      v.stConfirm = se.confirmDel; v.stNoConfirm = !se.confirmDel; v.stCanDelete = se.mode === 'edit';
+      v.saveStaple = function () { self.saveStaple(); }; v.doDelStaple = function () { self.doDelStaple(); };
+      v.askDelStaple = function () { self.setState({ stEdit: Object.assign({}, se, { confirmDel: true }) }); };
+      v.cancelDelStaple = function () { self.setState({ stEdit: Object.assign({}, se, { confirmDel: false }) }); };
+    }
+    if (l) {
+      var mine = function (i) { return s.filter === 'all' || i.who === s.filter; };
+      var isActive = l.status === 'active';
+      var mapI = function (i) {
+        return { rowCls: 'row' + (i.purchased ? ' done' : '') + (s.flashId === i.id ? ' flash' : ''), id: i.id, name: i.name, qty: i.qty, multi: i.qty >= 2, purchased: i.purchased, whoName: lab(i.who), initial: ini(i.who), avCls: 'av ' + (i.who === VIEWER ? 'me' : 'mom'), showWho: s.filter === 'all',
+          checkCls: i.purchased ? 'check on' : 'check', lock: !isActive,
+          checkLabel: i.name + (i.qty >= 2 ? '、' + i.qty + 'つ' : '') + (i.purchased ? '、購入済み。未購入に戻す' : '、未購入。購入済みにする'),
+          isPending: i.sync === 'pending', isFailed: i.sync === 'failed',
+          toggle: function () { self.toggle(i.id); }, open: function () { self.openItem(i); } };
+      };
+      var unp = l.items.filter(function (i) { return !i.purchased && mine(i); }).map(mapI);
+      var pur = l.items.filter(function (i) { return i.purchased && mine(i); }).map(mapI);
+      var pend = l.items.filter(function (i) { return i.sync !== 'ok'; }).length;
+      var cnt = function (k) { return l.items.filter(function (i) { return !i.purchased && (k === 'all' || i.who === k); }).length; };
+      var LI = ic(l.store);
+      v.L = { delLabel: isActive ? 'リストを削除' : '履歴を削除', delBody: (l.items.length ? '商品' + l.items.length + '品も消えます。' : '') + (isActive && s.hasMom ? NICK[otherW()] + 'の画面からも消えます。' : '') + '元に戻せません。', icon: LI.d, iconLabel: LI.label, name: l.name, store: l.store, active: isActive, closed: !isActive, closedAt: l.closedAt || '', itemCount: l.items.length,
+        storeLine: isActive ? l.store : l.store + ' · 終了済み', currentStore: l.store };
+      v.filters = (s.hasMom ? [[VIEWER, '自分'], [otherW(), NICK[otherW()]], ['all', 'すべて']] : [[VIEWER, '自分'], ['all', 'すべて']]).map(function (p) { return { label: p[1], count: cnt(p[0]), on: s.filter === p[0], cls: s.filter === p[0] ? 'on' : '', pick: function () { self.setState({ filter: p[0] }); } }; });
+      v.unp = unp; v.pur = pur; v.hasPur = pur.length > 0; v.purCount = pur.length;
+      var scope = l.items.filter(mine), sDone = scope.filter(function (i) { return i.purchased; }).length;
+      v.hasScope = scope.length > 0; v.scopeTotal = scope.length; v.scopeDone = sDone;
+      v.scopePct = (scope.length ? Math.round(sDone / scope.length * 100) : 0) + '%';
+      v.scopeLabel = s.filter === 'all' ? 'すべて' : lab(s.filter) + 'の担当';
+      var listAll = l.items.length > 0 && l.items.every(function (i) { return i.purchased; });
+      v.allDone = isActive && scope.length > 0 && unp.length === 0;
+      v.doneTitle = listAll ? '全部そろいました' : 'そろいました';
+      v.doneBody = listAll ? '買い物が終わったら、リストを終了して履歴に残せます。' : 'ほかの担当の商品は「すべて」で確認できます。';
+      v.doneCanClose = listAll;
+      v.showEnd = isActive && !listAll && l.items.some(function (i) { return i.purchased; });
+      v.noItems = l.items.length === 0;
+      v.unpEmpty = unp.length === 0 && !v.allDone;
+      v.unpEmptyTitle = l.items.length === 0 ? '商品なし' : '未購入なし';
+      v.unpEmptyBody = l.items.length === 0 ? (isActive ? '「商品を追加」から入力するか、定番から選べます。' : '') : (s.filter === 'all' ? '' : '「すべて」で全員分を確認できます。');
+      v.pendingCount = pend;
+      v.showFailed = s.failed && pend > 0;
+      v.showPendingOnline = s.online && s.syncing && pend > 0;
+      v.showPendingOffline = !s.online && pend > 0;
+      v.showRejected = s.rejected > 0; v.rejectedCount = s.rejected;
+      var typed = N(s.qa);
+      var sugAll = (s.staples[l.store] || []).filter(function (nm) { return !l.items.some(function (i) { return N(i.name) === N(nm); }); });
+      var sugs = sugAll.filter(function (nm) { return !typed || N(nm).indexOf(typed) >= 0; });
+      v.showSug = isActive && s.sugOpen && s.online;
+      v.sugs = sugs.map(function (nm) { var q = s.stQty[l.store + '|' + nm] || 1; return { name: nm + (q > 1 ? ' ×' + q : ''), keep: function (e) { e.preventDefault(); }, add: function () { if (self.addOne(nm, q)) self.setState({ qa: '', qaErr: '' }); } }; });
+      v.sugNone = sugs.length === 0;
+      v.sugNoneText = typed ? '一致なし。↑で追加' : '定番はすべてリストにあります';
+      var a = s.add, ex = a.name.trim() ? l.items.find(function (i) { return N(i.name) === N(a.name); }) : null;
+      v.addManual = a.mode === 'manual'; v.addStaple = a.mode === 'staple';
+      v.addManualCls = a.mode === 'manual' ? 'on' : ''; v.addStapleCls = a.mode === 'staple' ? 'on' : '';
+      v.modeManual = function () { self.setAdd({ mode: 'manual', err: '' }); }; v.modeStaple = function () { self.setAdd({ mode: 'staple', err: '' }); };
+      v.addName = a.name; v.onAddName = function (e) { self.setAdd({ name: e.target.value, err: '' }); };
+      v.addQty = a.qty; v.qtyMin = a.qty <= 1; v.qtyMax = a.qty >= 999;
+      v.qtyDec = function () { self.setAdd({ qty: Math.max(1, a.qty - 1), err: '' }); }; v.qtyInc = function () { self.setAdd({ qty: Math.min(999, a.qty + 1), err: '' }); };
+      var w = ex ? ex.who : a.who; v.whoLocked = !!ex;
+      v.whoMe = w === 'me'; v.whoMom = w === 'mom'; v.whoMeCls = w === 'me' ? 'chip on' : 'chip'; v.whoMomCls = w === 'mom' ? 'chip on' : 'chip';
+      v.setWhoMe = function () { self.setAdd({ who: 'me' }); }; v.setWhoMom = function () { self.setAdd({ who: 'mom' }); };
+      v.mergeHint = ex ? 'リストにあり　×' + ex.qty + ' → ×' + (ex.qty + a.qty) + (ex.purchased ? '　未購入に戻る' : '') : '';
+      v.mergeKeepsWho = !!ex && ex.who !== a.who; v.mergeWho = ex ? lab(ex.who) : '';
+      v.addBtn = ex ? '数量を合算' : 'リストに追加'; v.addErr = a.err;
+      v.submitManual = function () { self.submitManual(); };
+      var sts = s.staples[l.store] || [];
+      v.stapleRows = sts.map(function (nm) {
+        var o = a.sel[nm], inL = l.items.find(function (i) { return N(i.name) === N(nm); });
+        var upd = function (p) { var sel = Object.assign({}, a.sel); sel[nm] = Object.assign({}, sel[nm], p); self.setAdd({ sel: sel, err: '' }); };
+        return { name: nm, on: !!o, boxCls: o ? 'sbox on' : 'sbox', inList: !!inL, inQty: inL ? inL.qty : 0,
+          qty: o ? o.qty : 1, min: !o || o.qty <= 1, me: !!o && o.who === 'me', mom: !!o && o.who === 'mom',
+          meCls: o && o.who === 'me' ? 'chip on' : 'chip', momCls: o && o.who === 'mom' ? 'chip on' : 'chip',
+          toggle: function () { var sel = Object.assign({}, a.sel); if (sel[nm]) delete sel[nm]; else sel[nm] = { qty: 1, who: 'me' }; self.setAdd({ sel: sel, err: '' }); },
+          inc: function () { upd({ qty: Math.min(999, o.qty + 1) }); }, dec: function () { upd({ qty: Math.max(1, o.qty - 1) }); },
+          setMe: function () { upd({ who: 'me' }); }, setMom: function () { upd({ who: 'mom' }); } };
+      });
+      var nsel = Object.keys(a.sel).length;
+      v.stapleNone = nsel === 0; v.stapleBtn = nsel ? nsel + '件をリストに追加' : '商品を選んでください';
+      v.submitStaple = function () { self.submitStaple(); };
+      var e = s.edit;
+      if (e) {
+        v.editable = isActive; v.readonlyItem = !isActive; v.editTitle = isActive ? '商品を編集' : e.orig;
+        v.eName = e.name; v.eOrigName = e.orig; v.onEditName = function (ev) { self.setEdit({ name: ev.target.value, err: '' }); };
+        v.eQty = e.qty; v.eMin = e.qty <= 1; v.eMax = e.qty >= 999;
+        v.eDec = function () { self.setEdit({ qty: Math.max(1, e.qty - 1) }); }; v.eInc = function () { self.setEdit({ qty: Math.min(999, e.qty + 1) }); };
+        v.eMe = e.who === 'me'; v.eMom = e.who === 'mom'; v.eMeCls = e.who === 'me' ? 'chip on' : 'chip'; v.eMomCls = e.who === 'mom' ? 'chip on' : 'chip';
+        v.eSetMe = function () { self.setEdit({ who: 'me' }); }; v.eSetMom = function () { self.setEdit({ who: 'mom' }); };
+        v.eWhoName = lab(e.who); v.eStatus = e.purchased ? '購入済み' : '未購入';
+        v.editErr = e.err; v.confirmDel = e.confirmDel; v.noConfirm = !e.confirmDel;
+        v.saveEdit = function () { self.saveEdit(); }; v.toStaple = function () { self.toStaple(); };
+        v.askDelete = function () { self.setEdit({ confirmDel: true }); }; v.cancelDelete = function () { self.setEdit({ confirmDel: false }); };
+        v.doDelete = function () { self.doDelete(); };
+      }
+      var c = s.carry;
+      if (c) {
+        var unpAll = l.items.filter(function (i) { return !i.purchased; });
+        v.carryFrom = l.name; v.carryStore = l.store; v.carryName = c.custom || ''; v.carryErr = c.err; v.carryPlaceholder = jpDate(addDays(TODAY, 1));
+        v.carryNameOpen = !!c.nameOpen; v.carryNameClosed = !c.nameOpen;
+        v.openCarryName = function () { self.setState({ carry: Object.assign({}, c, { nameOpen: true }) }); };
+        v.onCarryName = function (ev) { self.setState({ carry: Object.assign({}, c, { custom: ev.target.value, err: '' }) }); };
+        v.carryRows = unpAll.map(function (i) { return { name: i.name, qty: i.qty, multi: i.qty >= 2, whoName: lab(i.who), on: !!c.sel[i.id], boxCls: c.sel[i.id] ? 'sbox on' : 'sbox',
+          toggle: function () { var sel = Object.assign({}, c.sel); sel[i.id] = !sel[i.id]; self.setState({ carry: Object.assign({}, c, { sel: sel, err: '' }) }); } }; });
+        var n = unpAll.filter(function (i) { return c.sel[i.id]; }).length;
+        v.carrySelCount = n; v.carryTotal = unpAll.length; v.carryBtn = n + '件で新しいリストを作成';
+        v.createCarry = function () { self.createCarry(); };
+      }
+    }
+    return v;
+  }
+}
+</script>
+</body>
+</html>

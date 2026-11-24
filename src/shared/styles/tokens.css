@@ -1,0 +1,105 @@
+/* 家族共有型・買い物リストPWA — デザイントークン
+ * STEP 4 UI/UX 設計 v1.0（2026-11-23 承認）
+ * 色・書体・余白はこのファイルのCSS変数からのみ使う。
+ * tokens.css 以外での16進カラー・名前付き色は stylelint で禁止する。
+ */
+:root {
+  /* surface / neutral（温かい白） */
+  --color-bg: #F8F6F1;
+  --color-surface: #FFFFFF;
+  --color-muted: #EFEBE3;          /* セグメントの地・情報の帯・アイコン台 */
+  --color-done-row: #F3F0E9;       /* 購入済みの行 */
+  --color-separator: #E3DED4;
+  --color-border-soft: #D3CDC1;
+  --color-border-strong: #78716A;  /* 入力欄・チップ・チェックの枠 4.8:1 */
+  --color-scrim: rgba(24, 32, 28, .45);
+
+  /* text */
+  --color-text: #18201C;           /* 16.6:1 */
+  --color-text-secondary: #544E47; /* 8.2:1 */
+
+  /* 墨＝押せる・選択中 */
+  --color-action: #18201C;
+  --color-action-pressed: #000000;
+  --color-on-action: #FFFFFF;
+
+  /* 緑＝済んだ・そろった（ボタンには使わない） */
+  --color-done: #1E6B47;
+  --color-done-soft: #E3F0E8;
+  --color-on-done-soft: #123D29;
+
+  /* 黄＝未確定（未送信・送信中） */
+  --color-pending-soft: #FFF1D6;
+  --color-on-pending: #4D3100;
+  --color-pending-badge: #6B4400;
+
+  /* 赤＝問題・取り消せない操作 */
+  --color-danger: #B3261E;
+  --color-danger-soft: #FCE8E6;
+  --color-on-danger-soft: #6E1712;
+  --color-danger-badge: #8F1D16;
+
+  --color-offline: #2B3A33;
+
+  /* 担当：自分＝青／相手＝ベージュ（どの端末でも同じ） */
+  --color-me-soft: #DCE9F7;
+  --color-on-me-soft: #123A63;
+  --color-partner-soft: #F3E6D3;
+  --color-on-partner-soft: #5A3E14;
+
+  /* 押せない状態（押すと理由をトーストで出す） */
+  --color-disabled: #E8E4DB;
+  --color-on-disabled: #655F55;
+
+  /* typography（rem指定で端末の文字サイズ設定に追従） */
+  --font-sans: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  --font-round: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", var(--font-sans);
+  --text-display: 700 1.875rem/2.375rem var(--font-round);   /* 30/38 見出し */
+  --text-list-name: 700 1.25rem/1.75rem var(--font-round);   /* 20/28 リスト名 */
+  --text-number: 700 1.75rem/2rem var(--font-round);         /* 残りの数など */
+  --text-item: 700 1.25rem/1.75rem var(--font-sans);         /* 20/28 商品名 */
+  --text-button: 700 1.0625rem/1.625rem var(--font-sans);    /* 17/26 */
+  --text-body: 400 1.0625rem/1.6875rem var(--font-sans);     /* 17/27 */
+  --text-label: 400 1rem/1.5rem var(--font-sans);            /* 16/24 */
+  --text-caption: 400 .9375rem/1.375rem var(--font-sans);    /* 15/22 最小（タブ名のみ14px） */
+
+  /* space（4px刻み） */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* radius */
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-fab: 18px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+
+  /* size */
+  --tap-min: 48px;
+  --button-h: 52px;
+  --row-min-h: 64px;
+  --check-hit: 56px;
+
+  /* focus / motion */
+  --focus-ring: 2px solid var(--color-action);
+  --focus-offset: 2px;
+  --dur-check-pop: 220ms;
+  --dur-progress: 300ms;
+  --dur-row-flash: 1800ms;
+  --dur-toast: 3200ms;
+  --dur-toast-undo: 6000ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-check-pop: 0ms;
+    --dur-progress: 0ms;
+    --dur-row-flash: 0ms;
+  }
+}

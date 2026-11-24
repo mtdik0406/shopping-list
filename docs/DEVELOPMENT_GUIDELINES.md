@@ -1,0 +1,66 @@
+# DEVELOPMENT_GUIDELINES — Claude Code 実装引継ぎ
+
+- 工程: STEP 3 / v0.9.2（v0.9条件付き承認に、REQUIREMENTS/AC v2.2・STEP 4 UI_DESIGNを反映）/ 2026-11-24
+- 本書は実装時の方針であり、実装開始（STEP 5）の承認そのものではない。
+
+## リポジトリ推奨構成
+
+```text
+src/
+  app/{router,providers}/
+  features/{auth,groups,invitations,stores,staples,shopping-lists}/
+    [feature]/{components,application,domain,infrastructure}/
+  shared/{components,firebase,utils,styles}/   # styles/tokens.css はSTEP 4の確定版
+  main.ts
+tests/{unit,integration,security-rules,e2e}/
+docs/{PRODUCT_BRIEF,REQUIREMENTS,ACCEPTANCE_CRITERIA,ARCHITECTURE,TECHNICAL_VALIDATION,DEVELOPMENT_GUIDELINES,UI_DESIGN,CHANGE_REQUESTS_STEP2,STEP5_PLAN}.md
+docs/ui-prototype/Main.dc.html   # 操作できるプロトタイプのソース（参照用）
+docs/adr/
+firestore.rules
+firestore.indexes.json
+firebase.json
+```
+
+小規模MVPを優先し、featureに不要なフォルダを予め大量作成しない。Domain層の純粋関数にはFirebase SDKを入れない。Applicationでユースケースを調停し、Repositoryインターフェース越しにFirestoreへアクセス。Piniaはローカル画面状態を保持するがサーバー正本の二重管理を避ける。UIの見た目・振る舞い・文言は `docs/UI_DESIGN.md` と `tokens.css` に従い、プロトタイプのHTMLは移植せずVueで作り直す。
+
+## Pull Request運用
+
+- main直コミット禁止、feature branch→PR→CI→レビュー→Squash merge。
+- commit: `feat: 商品の数量合算を追加`、`fix: 終了後の購入チェックを拒否` のようにtype+日本語。
+- 重要な設計変更はADRに「背景/選択肢/決定/根拠/影響/見直し条件」を記録。
+- AIエージェントには `docs/` の正本（PRODUCT_BRIEF、REQUIREMENTS、ACCEPTANCE_CRITERIA、ARCHITECTURE、TECHNICAL_VALIDATION、UI_DESIGN、本書）を明示する。要件変更・課金プラン変更・Security Rulesの権限拡大・個人データ保持の拡大を無断で行わせない。
+
+## CI 必須の確認
+
+1. `npm ci` による再現性のある依存インストール
+2. ESLint / Prettier --check / `tsc --noEmit` / stylelint（`tokens.css` 以外での色の直接指定を禁止）
+3. Vitest（ドメイン、アプリケーション）
+4. Firebase Emulator Suite + Rulesの許可/拒否テスト
+5. Vite build、PWA manifest検査
+6. gitleaks、Dependabot、GitHub Actionsの権限最小化
+7. Playwrightの代表的利用フロー（Emulator上、画面幅320・375・414px）。実機試験は別ゲート。
+
+## テスト戦略
+
+- 単体：商品名trim/正規化、文字数境界、数量1/9と合算超過、いつもの数量（定番）、編集による重複拒否、担当者と初期値（表示中の人）、呼び名、リスト名の初期値（購入予定日）、履歴スナップショット。
+- 統合：招待発行24時間、複数申請と同時承認、1ユーザー1グループ、Rules拒否（呼び名の参照範囲を含む）、購入先参照削除拒否、同時商品追加、定番の同時登録、終了競合、利用中リスト削除と遅延チェック、未同期拒否。
+- E2E：ログイン、グループ作成（呼び名）、共有、入力欄と定番候補からの追加・合算・取り消し、担当者別（自分／相手／すべて）、購入チェック、買い物を終える（4つの入口）、履歴、引継ぎ、リスト削除、空/失敗状態。
+- 実機：iPhone Safari/PWAとAndroid Chrome/PWAで認証・永続化・再接続・アカウント切替・権限失効。キーボード表示時の入力欄、日本語変換確定のEnter、文字サイズ最大（UI_DESIGN.md 第11章）。
+- 行カバレッジ数値のみを品質判定にしない。振る舞い・境界・権限を検証する。
+- 公開リポジトリのため、PR本文・コミット・ADR・試験記録に利用者の実名・続柄・メールアドレスを書かない（「家族」「利用者B」等で表す）。
+
+## デプロイ・運用
+
+- 開発用と本番用Firebaseプロジェクト分離。公開前の最小権限、Rules/Indexレビュー、承認済みHosting設定、ドメイン確認。
+- サービスアカウントキー・Refresh Token・招待URLはログ/レポジトリへ保存しない。
+- Spark利用量の定期確認。Cloud BillingリンクやBlaze変更は手動の明示承認を必須にする。
+- 削除、アカウント無効化、オフラインキャッシュは未検証を示す。失敗時に成功表示をしない。
+
+## Claude Codeへの最初の指示テンプレート
+
+> `docs/` の正本（`PRODUCT_BRIEF.md` v1.1、`REQUIREMENTS.md` v2.1、`ACCEPTANCE_CRITERIA.md` v2.1、`ARCHITECTURE.md` v0.9.1、`TECHNICAL_VALIDATION.md` v0.9.1、本書、`UI_DESIGN.md` v1.0.1）を読み、未検証事項（RISK-01〜10、PoC-01〜05）と承認ゲートを要約する。PoC対象の最小検証計画を実行単位に分解し、承認済みMVP要件を変更せず、Security Rules/トランザクション/削除/オフラインの成立条件を優先して確認する。BlazeやCloud Functionsの導入は独断で行わない。計画の承認前に実装を始めない。
+
+## 改訂記録
+
+- v0.9.1（2026-11-24）：推奨構成に `docs/` の文書一覧・`tokens.css`・プロトタイプのソースを追加し、AGENTS.mdを外した（エージェントへの指示は正本と最初の指示で与える）。CIにstylelint（色の直接指定禁止）と画面幅を追加し、テスト戦略にSTEP 4の確定事項を追加した。最初の指示テンプレートを実装工程向けに更新した。
+- v0.9.2（2026-11-24）：CM-11により単体テストの数量境界を1/9に変更した。`STEP5_PLAN.md`を文書一覧に加え、公開リポジトリでの個人情報の扱いを追記した。
