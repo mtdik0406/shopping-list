@@ -56,9 +56,15 @@ firebase.json
 - Spark利用量の定期確認。Cloud BillingリンクやBlaze変更は手動の明示承認を必須にする。
 - 削除、アカウント無効化、オフラインキャッシュは未検証を示す。失敗時に成功表示をしない。
 
+## 文書どうしの参照
+
+- 版番号は各文書の冒頭の版の行にだけ書く。他の文書はファイル名・章・ID（FR・NFR・AC・RISK・PoC・P01-xx・CMなど）で参照し、版番号を付けない。参照は常にmainの最新版を指す。
+- 改訂記録・変更管理の記録・承認の記録（「v2.1を承認」など）は当時の版を残すための記録なので、版番号を書いてよい。
+- 文書の改訂は文書だけのPRで行い、別のエージェントにレビューさせる。
+
 ## Claude Codeへの最初の指示テンプレート
 
-> `docs/` の正本（`PRODUCT_BRIEF.md` v1.2、`REQUIREMENTS.md` v2.2、`ACCEPTANCE_CRITERIA.md` v2.2、`ARCHITECTURE.md` v0.9.2、`TECHNICAL_VALIDATION.md` v0.9.2、本書、`UI_DESIGN.md` v1.0.2、`STEP5_PLAN.md`）を読み、未検証事項（RISK-01〜10、PoC-01〜05）と承認ゲートを要約する。PoC対象の最小検証計画を実行単位に分解し、承認済みMVP要件を変更せず、Security Rules/トランザクション/削除/オフラインの成立条件を優先して確認する。BlazeやCloud Functionsの導入は独断で行わない。計画の承認前に実装を始めない。
+> `docs/` の正本（`PRODUCT_BRIEF.md`、`REQUIREMENTS.md`、`ACCEPTANCE_CRITERIA.md`、`ARCHITECTURE.md`、`TECHNICAL_VALIDATION.md`、本書、`UI_DESIGN.md`、`STEP5_PLAN.md`）を読み、未検証事項（RISK-01〜10、PoC-01〜05）と承認ゲートを要約する。PoC対象の最小検証計画を実行単位に分解し、承認済みMVP要件を変更せず、Security Rules/トランザクション/削除/オフラインの成立条件を優先して確認する。BlazeやCloud Functionsの導入は独断で行わない。計画の承認前に実装を始めない。
 
 ## 改訂記録
 

@@ -3,7 +3,7 @@
 - 工程：STEP 5 — 実装（準備）
 - 版：v1.0（2026-11-24）
 - 状態：**PR-0〜PR-6（資料の配置・初期化・PoC-02・PoC-01）の着手を利用者が承認（2026-11-24）。PR-7以降はPoC結果の報告後に改めて承認を受ける。**
-- 正本：`PRODUCT_BRIEF.md` v1.2、`REQUIREMENTS.md` v2.2、`ACCEPTANCE_CRITERIA.md` v2.2、`ARCHITECTURE.md` v0.9.2、`TECHNICAL_VALIDATION.md` v0.9.2、`DEVELOPMENT_GUIDELINES.md` v0.9.3、`UI_DESIGN.md` v1.0.2、`tokens.css`
+- 正本：`docs/`の各文書と`tokens.css`（参照のしかたは`DEVELOPMENT_GUIDELINES.md`「文書どうしの参照」）
 
 > 本書はSTEP 5準備の計画レビュー（第1〜5章を章ごとに確認）で決めた事項の記録である。要件・受け入れ条件を変更しない。要件と食い違う場合は要件を優先する。
 
@@ -50,11 +50,11 @@
 
 ### 5.1 順序
 
-PR-0 資料の配置 → PR-1 初期化とCI → PR-2 Emulator基盤 → PR-3 Domainの計算ルール → PR-4 PoC-02 → PR-5 PoC-01段階1 → PR-6 PoC-01段階2 → **PoC結果の報告と判断** → PR-7以降の画面実装。
+PR-0 資料の配置 → PR-1 初期化とCI → 文書の整理（D1〜D3） → PR-2 Emulator基盤 → PR-3 Domainの計算ルール → PR-4 PoC-02 → PR-5 PoC-01段階1 → PR-6 PoC-01段階2 → **PoC結果の報告と判断** → PR-7以降の画面実装。
 
 ### 5.2 最初のPoCの構成
 
-- Emulatorは`demo-`で始まるプロジェクトIDで起動し、アプリの接続先をEmulatorに固定する（`demo-`の扱いは着手時に公式で確認する）。firebase-toolsはdevDependencyとし、パッケージ管理はpnpm（2026-11-24変更、DEVELOPMENT_GUIDELINES v0.9.3）。
+- Emulatorは`demo-`で始まるプロジェクトIDで起動し、アプリの接続先をEmulatorに固定する（`demo-`の扱いは着手時に公式で確認する）。firebase-toolsはdevDependencyとし、パッケージ管理はpnpm（2026-11-24変更、`DEVELOPMENT_GUIDELINES.md`）。
 - 段階1（Node + Vitest + `@firebase/rules-unit-testing` + Web SDK）：Rulesの許可・拒否、トランザクション、同時操作の競合（100回以上）。
 - 段階2（Playwright Chromium・WebKit + 永続キャッシュ）：オフライン → 再読み込み → 相手の終了・削除 → 復帰（P01-04・07・08）。WebKitはiOS Safariと同一ではないため、ここだけでPASSにしない。
 - 順序：PoC-02（P02-01〜07・09）→ PoC-01段階1（P01-01〜03・05・06・09〜12）→ PoC-01段階2（P01-04・07・08）。
@@ -66,6 +66,9 @@ PR-0 資料の配置 → PR-1 初期化とCI → PR-2 Emulator基盤 → PR-3 Do
 |---|---|---|---|
 | 0 | 資料の配置、承認表記・版ずれの修正、CM-11、P01-11・12、本書 | — | レビューで承認 |
 | 1 | 初期化（Vite・Vue 3・TypeScript strict・Pinia・Vue Router・ESLint・Prettier・stylelint・Vitest）とCI | — | CIが通る |
+| D1 | 文書どうしの版番号の参照をなくす（`DEVELOPMENT_GUIDELINES.md`「文書どうしの参照」） | — | レビューで承認 |
+| D2 | 同じ事実を書く文書を1つにまとめ、他の文書はIDで参照する | — | 要件の内容が変わらないことをレビューで確認 |
+| D3 | CIの文書検査（参照するIDの実在、他の文書の版番号） | — | CIが通る |
 | 2 | Emulator基盤（すべて拒否するRules）、Playwrightの土台 | — | CIでEmulatorが動く |
 | 3 | Domainの純粋関数（正規化・文字数・数量1〜9・合算・担当初期値・リスト名初期値・日付表記・引き継ぎ候補） | FR-013・016・018〜022・027・028 | 単体テストが通る |
 | 4 | PoC-02：所属・招待・承認・脱退・除外・呼び名のRules | FR-001〜010、AC-02〜05・24 | Emulator分のPASS（P02-08は実機） |

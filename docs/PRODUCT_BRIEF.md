@@ -4,7 +4,7 @@
 - 版：v1.2（表現の一般化と参照の更新。企画内容はv1.0から変更なし。第13章参照）
 - 作成日：2026-11-23
 - ステータス：**STEP 1 最終承認済み（2026-11-23）。** STEP 2・STEP 4承認済み、STEP 3条件付き承認。STEP 5はPoC（PR-0〜PR-6）の着手のみ承認済み（2026-11-24）。
-- 参照資料：`REQUIREMENTS.md` v2.2、`ACCEPTANCE_CRITERIA.md` v2.2、`UI_DESIGN.md` v1.0.2（v1.0作成時の参照はREQUIREMENTS・ACCEPTANCE_CRITERIA v1.1）
+- 参照資料：`REQUIREMENTS.md`、`ACCEPTANCE_CRITERIA.md`、`UI_DESIGN.md`（v1.0作成時の参照はREQUIREMENTS・ACCEPTANCE_CRITERIA v1.1）
 
 > 本書はプロダクトの目的・価値・範囲・成功基準を整理する企画文書である。既に承認されたSTEP 2の業務仕様を変更・上書きしない。個々の期待動作は`REQUIREMENTS.md`、受け入れ判定は`ACCEPTANCE_CRITERIA.md`を参照する。
 
@@ -76,7 +76,7 @@
 
 ## 6. MVPの中核機能
 
-以下は`REQUIREMENTS.md` v2.2に記載されている機能の企画レベルの要約である。
+以下は`REQUIREMENTS.md`に記載されている機能の企画レベルの要約である。
 
 | 領域 | MVPで提供すること | 要件参照 |
 |---|---|---|
@@ -103,7 +103,7 @@
 
 ## 7. MVPの対象外
 
-`REQUIREMENTS.md` v2.2に従い、以下はMVPで提供しない。
+`REQUIREMENTS.md`に従い、以下はMVPで提供しない。
 
 - 価格・予算集計
 - レシート読み取り・OCR、バーコード

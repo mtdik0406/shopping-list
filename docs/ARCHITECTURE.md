@@ -4,7 +4,7 @@
 - 版: v0.9.2（条件付き最終承認版 v0.9 に、STEP 2 v2.2・STEP 4・STEP 5準備の確定事項を反映。第13章参照）
 - 日付: 2026-11-23
 - 状態: **条件付き承認。PoC未実施、実装可能性を保証しない**
-- 正本: `PRODUCT_BRIEF.md` v1.2、`REQUIREMENTS.md` v2.2、`ACCEPTANCE_CRITERIA.md` v2.2。UIは`UI_DESIGN.md` v1.0.2・`tokens.css`
+- 正本: `PRODUCT_BRIEF.md`、`REQUIREMENTS.md`、`ACCEPTANCE_CRITERIA.md`。UIは`UI_DESIGN.md`・`tokens.css`
 - 要件優先順位: 承認済み業務要件 > 本設計案。相違が生じた場合、要件を勝手に変更せず承認ゲートへ戻す。
 
 ## 1. 目的と設計原則
@@ -146,7 +146,7 @@ PWA Service Workerは静的アセット主体とし、認証済みFirestoreレ�
 | AC-01〜25 / AC-N01〜N07 | TECHNICAL_VALIDATION.md | 全項目は実装後受入。PoCで代表的な高リスクシナリオを先行検証 |
 
 - 「リスト商品から定番登録」はSTEP 2でFR-036として正式化済み。STEP 4の変更管理（CM-01〜03・08〜10）はREQUIREMENTS/ACCEPTANCE_CRITERIA v2.1に反映済み（2026-11-24承認）。CM-11（数量1〜9）はv2.2に反映。
-- RISKの定義はREQUIREMENTS v2.2の第7章（RISK-01〜10）、RISKとPoCの対応は`TECHNICAL_VALIDATION.md`のRISK台帳が正。STEP 3で識別したグループライフサイクル（Web SDK+Rulesの成立性）は、REQUIREMENTSのRISK-08（定番の同時更新）と番号が衝突していたためRISK-10に改番した。
+- RISKの定義はREQUIREMENTSの第7章（RISK-01〜10）、RISKとPoCの対応は`TECHNICAL_VALIDATION.md`のRISK台帳が正。STEP 3で識別したグループライフサイクル（Web SDK+Rulesの成立性）は、REQUIREMENTSのRISK-08（定番の同時更新）と番号が衝突していたためRISK-10に改番した。
 - 主要リスク・代替案・再承認条件は`TECHNICAL_VALIDATION.md`とADRに記録。
 
 ## 12. 公式資料（確認日: 2026-11-23）
