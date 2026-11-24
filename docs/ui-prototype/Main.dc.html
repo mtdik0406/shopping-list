@@ -112,7 +112,7 @@ a{color:var(--done)}a:hover{color:var(--done-pressed)}
 .prog .pt b{font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums}
 .av{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none}
 .av.me{background:var(--done-soft);color:var(--on-done-soft)}
-.av.mom{background:var(--partner-soft);color:var(--on-partner-soft)}
+.av.partner{background:var(--partner-soft);color:var(--on-partner-soft)}
 .who{display:inline-flex;align-items:center;gap:6px}
 .donecard{background:var(--done-soft);color:var(--on-done-soft);border-radius:16px;padding:20px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:8px;font-size:15px;line-height:23px}
 .donecard b{font-size:18px;line-height:26px}
@@ -432,7 +432,7 @@ a{color:var(--done)}a:hover{color:var(--done-pressed)}
 <div class="scroll">
 <div class="group" style="margin-top: 8px">
 <div class="mrow"><span class="{{avMe}}" aria-hidden="true">{{iniMe}}</span><div class="nm">{{memMe}}<small>管理者</small></div></div>
-<sc-if value="{{hasMom}}"><div class="mrow"><span class="{{avMom}}" aria-hidden="true">{{iniMom}}</span><div class="nm">{{memMom}}<small>hanako@example.com</small></div><sc-if value="{{isAdminView}}"><button class="mini d" onClick="{{askRemove}}">外す</button></sc-if></div></sc-if>
+<sc-if value="{{hasPartner}}"><div class="mrow"><span class="{{avPartner}}" aria-hidden="true">{{iniPartner}}</span><div class="nm">{{memPartner}}<small>hanako@example.com</small></div><sc-if value="{{isAdminView}}"><button class="mini d" onClick="{{askRemove}}">外す</button></sc-if></div></sc-if>
 </div>
 <sc-if value="{{canInvite}}">
 <div class="secthead">招待</div>
@@ -516,7 +516,7 @@ a{color:var(--done)}a:hover{color:var(--done-pressed)}
 <div class="field"><span class="lbl">数量</span>
 <div class="stepper"><button aria-label="数量を減らす" disabled="{{qtyMin}}" onClick="{{qtyDec}}">−</button><span aria-live="polite">{{addQty}}</span><button aria-label="数量を増やす" disabled="{{qtyMax}}" onClick="{{qtyInc}}">＋</button></div></div>
 <div class="field"><span class="lbl">担当</span>
-<div class="chips"><button class="{{whoMeCls}}" disabled="{{whoLocked}}" aria-pressed="{{whoMe}}" onClick="{{setWhoMe}}">{{labMe}}</button><button class="{{whoMomCls}}" disabled="{{whoLocked}}" aria-pressed="{{whoMom}}" onClick="{{setWhoMom}}">{{labMom}}</button></div>
+<div class="chips"><button class="{{whoMeCls}}" disabled="{{whoLocked}}" aria-pressed="{{whoMe}}" onClick="{{setWhoMe}}">{{labMe}}</button><button class="{{whoPartnerCls}}" disabled="{{whoLocked}}" aria-pressed="{{whoPartner}}" onClick="{{setWhoPartner}}">{{labPartner}}</button></div>
 </div>
 <sc-if value="{{addErr}}"><div class="err" role="alert" style="margin-bottom: 12px">{{addErr}}</div></sc-if>
 <button class="btn pri" onClick="{{submitManual}}">{{addBtn}}</button>
@@ -527,7 +527,7 @@ a{color:var(--done)}a:hover{color:var(--done-pressed)}
 <button class="srow-main" aria-pressed="{{r.on}}" onClick="{{r.toggle}}"><span class="{{r.boxCls}}"><sc-if value="{{r.on}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></sc-if></span><span style="display: flex; flex-direction: column"><span class="iname">{{r.name}}</span><sc-if value="{{r.inList}}"><span class="meta">リストにあり ×{{r.inQty}}</span></sc-if></span></button>
 <sc-if value="{{r.on}}"><div class="srow-opts">
 <div class="stepper"><button aria-label="{{r.name}}の数量を減らす" disabled="{{r.min}}" onClick="{{r.dec}}">−</button><span>{{r.qty}}</span><button aria-label="{{r.name}}の数量を増やす" onClick="{{r.inc}}">＋</button></div>
-<div class="chips"><button class="{{r.meCls}}" aria-pressed="{{r.me}}" onClick="{{r.setMe}}">{{labMe}}</button><button class="{{r.momCls}}" aria-pressed="{{r.mom}}" onClick="{{r.setMom}}">{{labMom}}</button></div>
+<div class="chips"><button class="{{r.meCls}}" aria-pressed="{{r.me}}" onClick="{{r.setMe}}">{{labMe}}</button><button class="{{r.partnerCls}}" aria-pressed="{{r.partner}}" onClick="{{r.setPartner}}">{{labPartner}}</button></div>
 </div></sc-if>
 </div>
 </sc-for>
@@ -546,7 +546,7 @@ a{color:var(--done)}a:hover{color:var(--done-pressed)}
 <sc-if value="{{editable}}">
 <div class="field"><label class="lbl" for="editname">商品名</label><input id="editname" class="input" value="{{eName}}" onChange="{{onEditName}}"></div>
 <div class="field"><span class="lbl">数量</span><div class="stepper"><button aria-label="数量を減らす" disabled="{{eMin}}" onClick="{{eDec}}">−</button><span>{{eQty}}</span><button aria-label="数量を増やす" disabled="{{eMax}}" onClick="{{eInc}}">＋</button></div></div>
-<div class="field"><span class="lbl">担当</span><div class="chips"><button class="{{eMeCls}}" aria-pressed="{{eMe}}" onClick="{{eSetMe}}" style="order: {{ordMe}}">{{labMe}}</button><sc-if value="{{hasMom}}"><button class="{{eMomCls}}" aria-pressed="{{eMom}}" onClick="{{eSetMom}}" style="order: {{ordMom}}">{{labMom}}</button></sc-if></div></div>
+<div class="field"><span class="lbl">担当</span><div class="chips"><button class="{{eMeCls}}" aria-pressed="{{eMe}}" onClick="{{eSetMe}}" style="order: {{ordMe}}">{{labMe}}</button><sc-if value="{{hasPartner}}"><button class="{{ePartnerCls}}" aria-pressed="{{ePartner}}" onClick="{{eSetPartner}}" style="order: {{ordPartner}}">{{labPartner}}</button></sc-if></div></div>
 <sc-if value="{{editErr}}"><div class="err" role="alert" style="margin-bottom: 12px">{{editErr}}</div></sc-if>
 <sc-if value="{{noConfirm}}">
 <div style="display: flex; flex-direction: column; gap: 8px">
@@ -692,7 +692,7 @@ a{color:var(--done)}a:hover{color:var(--done-pressed)}
 <sc-if value="{{sheetRemove}}">
 <div class="dialogwrap"><div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="rmttl">
 <h2 id="rmttl">花子をグループから外しますか</h2>
-<p>利用中リストの花子の担当 {{momActiveCount}}件は自分の担当になります。</p>
+<p>利用中リストの花子の担当 {{partnerActiveCount}}件は自分の担当になります。</p>
 <button class="btn dan" onClick="{{doRemove}}">外す</button>
 <button class="btn ghost" onClick="{{closeSheet}}">キャンセル</button>
 </div></div>
@@ -753,11 +753,11 @@ a{color:var(--done)}a:hover{color:var(--done-pressed)}
 var N = function (s) { return (s || '').normalize('NFKC').trim().toLowerCase(); };
 var LEN = function (s) { return Array.from((s || '').trim()).length; };
 var VIEWER = 'me';
-var NICK = { me: '太郎', mom: '花子' };
+var NICK = { me: '太郎', partner: '花子' };
 function lab(w) { return w === VIEWER ? '自分' : NICK[w]; }
 function ini(w) { return w === VIEWER ? '自' : NICK[w].charAt(0); }
-function otherW() { return VIEWER === 'me' ? 'mom' : 'me'; }
-var WHO = { me: '太郎', mom: '花子' };
+function otherW() { return VIEWER === 'me' ? 'partner' : 'me'; }
+var WHO = { me: '太郎', partner: '花子' };
 var SEQ = 100;
 var ICONS = {
   cart: ['カート', 'M2 3h2l2.7 12.4a2 2 0 0 0 2 1.6h9.6a2 2 0 0 0 2-1.6L22 7H5.2M8 21a1 1 0 1 0 2 0a1 1 0 1 0-2 0M18 21a1 1 0 1 0 2 0a1 1 0 1 0-2 0'],
@@ -790,13 +790,13 @@ function initial() {
     sheet: null, toast: '', staplesStore: 'スーパー',
     add: { mode: 'manual', name: '', qty: 1, who: 'me', sel: {}, err: '' },
     edit: null, carry: null, qa: '', qaErr: '', stSel: {}, stEdit: null, celeb: null, stQty: { 'スーパー|牛乳': 2, 'スーパー|納豆': 3 }, undo: null, flashId: null, sugOpen: false,
-    sub: null, hasMom: true, invite: false, requests: [], nick: '太郎', momNick: '花子', viewer: 'me', phoneW: 390, nickDraft: '', cr: null, cs: null, se: null, gdChecked: false,
+    sub: null, hasPartner: true, invite: false, requests: [], nick: '太郎', partnerNick: '花子', viewer: 'me', phoneW: 390, nickDraft: '', cr: null, cs: null, se: null, gdChecked: false,
     staples: { 'スーパー': ['牛乳', '卵', '食パン', '納豆', '豆腐', 'トマト', 'ヨーグルト'], 'ドラッグストア': ['ティッシュ', '歯みがき粉', 'シャンプー'] },
     lists: [
-      { id: 'L1', name: '11月23日（月）', store: 'スーパー', status: 'active', otherClosed: false, items: [mk('牛乳', 2, 'me', false), mk('卵', 1, 'me', false), mk('豆腐', 1, 'me', false), mk('食パン', 1, 'mom', false), mk('ヨーグルト', 2, 'mom', false), mk('玉ねぎ', 3, 'me', true), mk('バナナ', 1, 'mom', true)] },
-      { id: 'L2', name: '11月25日（水）', store: 'ドラッグストア', status: 'active', otherClosed: false, items: [mk('ティッシュ', 1, 'mom', false), mk('歯みがき粉', 1, 'me', false)] },
-      { id: 'H1', name: '11月16日（月）', store: 'スーパー', status: 'closed', closedAt: '11月16日（月）', otherClosed: false, items: [mk('牛乳', 1, 'me', true), mk('納豆', 2, 'mom', false), mk('トマト', 3, 'me', true)] },
-      { id: 'H2', name: '10月30日（金）', store: 'ドラッグストア', status: 'closed', closedAt: '10月30日（金）', otherClosed: false, items: [mk('ティッシュ', 2, 'mom', true), mk('シャンプー', 1, 'me', true)] }
+      { id: 'L1', name: '11月23日（月）', store: 'スーパー', status: 'active', otherClosed: false, items: [mk('牛乳', 2, 'me', false), mk('卵', 1, 'me', false), mk('豆腐', 1, 'me', false), mk('食パン', 1, 'partner', false), mk('ヨーグルト', 2, 'partner', false), mk('玉ねぎ', 3, 'me', true), mk('バナナ', 1, 'partner', true)] },
+      { id: 'L2', name: '11月25日（水）', store: 'ドラッグストア', status: 'active', otherClosed: false, items: [mk('ティッシュ', 1, 'partner', false), mk('歯みがき粉', 1, 'me', false)] },
+      { id: 'H1', name: '11月16日（月）', store: 'スーパー', status: 'closed', closedAt: '11月16日（月）', otherClosed: false, items: [mk('牛乳', 1, 'me', true), mk('納豆', 2, 'partner', false), mk('トマト', 3, 'me', true)] },
+      { id: 'H2', name: '10月30日（金）', store: 'ドラッグストア', status: 'closed', closedAt: '10月30日（金）', otherClosed: false, items: [mk('ティッシュ', 2, 'partner', true), mk('シャンプー', 1, 'me', true)] }
     ]
   };
 }
@@ -985,8 +985,8 @@ class Component extends DCLogic {
     this.say('リストを作成');
   }
   doRemove() {
-    var lists = this.state.lists.map(function (l) { if (l.status !== 'active') return l; var c = cloneList(l); c.items.forEach(function (i) { if (i.who === 'mom') i.who = 'me'; }); return c; });
-    this.setState({ lists: lists, hasMom: false, sheet: null, filter: 'me' });
+    var lists = this.state.lists.map(function (l) { if (l.status !== 'active') return l; var c = cloneList(l); c.items.forEach(function (i) { if (i.who === 'partner') i.who = 'me'; }); return c; });
+    this.setState({ lists: lists, hasPartner: false, sheet: null, filter: 'me' });
     this.say('花子をグループから外しました');
   }
   openItem(it) {
@@ -1048,7 +1048,7 @@ class Component extends DCLogic {
   }
 
   renderVals() {
-    VIEWER = this.state.viewer; NICK = { me: this.state.nick, mom: this.state.momNick };
+    VIEWER = this.state.viewer; NICK = { me: this.state.nick, partner: this.state.partnerNick };
     var self = this, s = this.state, l = this.cur();
     var active = s.lists.filter(function (x) { return x.status === 'active'; });
     var closed = s.lists.filter(function (x) { return x.status === 'closed'; });
@@ -1125,7 +1125,7 @@ class Component extends DCLogic {
       reset: function () { clearTimeout(self._s); clearTimeout(self._r); self.setState(initial()); },
       demoState: (l && l.otherClosed ? '状態：花子の端末でこのリストは終了済み（この端末は未取得）。' : '') + (s.failNext ? '次の送信は失敗します。' : '')
     };
-    v.labMe = lab('me'); v.labMom = lab('mom'); v.ordMe = VIEWER === 'me' ? 0 : 1; v.ordMom = VIEWER === 'me' ? 1 : 0;
+    v.labMe = lab('me'); v.labPartner = lab('partner'); v.ordMe = VIEWER === 'me' ? 0 : 1; v.ordPartner = VIEWER === 'me' ? 1 : 0;
     v.phoneW = s.phoneW; v.widths = [320, 375, 390, 414].map(function (n) { return { n: n, on: s.phoneW === n, cls: s.phoneW === n ? 'dbtn on' : 'dbtn', pick: function () { self.setState({ phoneW: n }); } }; });
     v.showCeleb = !!s.celeb; v.celebN = s.celeb ? s.celeb.n : 0; v.celebRemain = s.celeb ? s.celeb.remain : 0; v.celebHasRemain = !!s.celeb && s.celeb.remain > 0;
     v.celebSub = s.celeb && s.celeb.remain > 0 ? 'カゴに入れました。履歴に残しました' : 'ぜんぶカゴに入れました。履歴に残しました';
@@ -1140,8 +1140,8 @@ class Component extends DCLogic {
     var goSub = function (k) { return function () { if (!s.online && k !== 'data') { self.say('オフラインのため使えません'); return; } self.setState({ sub: k, sheet: null }); }; };
     v.toSettings = function () { self.setState({ sub: null, sheet: null, tab: 'settings' }); };
     v.goMembers = goSub('members'); v.goStores = goSub('stores'); v.goAccount = goSub('account'); v.goData = goSub('data');
-    v.memberCount = s.hasMom ? 2 : 1; v.storeCount = storeNames.length; v.nick = NICK[VIEWER]; v.nickInitial = NICK[VIEWER].charAt(0); v.isAdminView = VIEWER === 'me'; v.isMemberView = VIEWER !== 'me';
-    v.otherName = NICK[otherW()]; v.memMe = NICK.me + (VIEWER === 'me' ? '（自分）' : ''); v.memMom = NICK.mom + (VIEWER === 'mom' ? '（自分）' : ''); v.iniMe = ini('me'); v.iniMom = ini('mom'); v.avMe = 'av ' + (VIEWER === 'me' ? 'me' : 'mom'); v.avMom = 'av ' + (VIEWER === 'mom' ? 'me' : 'mom'); v.hasMom = s.hasMom;
+    v.memberCount = s.hasPartner ? 2 : 1; v.storeCount = storeNames.length; v.nick = NICK[VIEWER]; v.nickInitial = NICK[VIEWER].charAt(0); v.isAdminView = VIEWER === 'me'; v.isMemberView = VIEWER !== 'me';
+    v.otherName = NICK[otherW()]; v.memMe = NICK.me + (VIEWER === 'me' ? '（自分）' : ''); v.memPartner = NICK.partner + (VIEWER === 'partner' ? '（自分）' : ''); v.iniMe = ini('me'); v.iniPartner = ini('partner'); v.avMe = 'av ' + (VIEWER === 'me' ? 'me' : 'partner'); v.avPartner = 'av ' + (VIEWER === 'partner' ? 'me' : 'partner'); v.hasPartner = s.hasPartner;
     v.storeRows = storeNames.map(function (k) { var u = self.storeUsage(k); return { name: k, icon: ic(k).d, usage: u ? '使用中' : '未使用', edit: function () { self.setState({ sheet: 'storeEdit', se: { mode: 'edit', orig: k, name: k, icon: STORE_ICON[k] || 'store', err: '', confirmDel: false, back: null } }); } }; });
     v.noStores = storeNames.length === 0;
     v.newStore = function () { self.setState({ sheet: 'storeEdit', se: { mode: 'new', orig: '', name: '', icon: 'store', err: '', confirmDel: false, back: null } }); };
@@ -1191,26 +1191,26 @@ class Component extends DCLogic {
     v.sheetChangeStore = s.sheet === 'changeStore';
     v.csStores = storeNames.map(function (k) { return { name: k, icon: ic(k).d, on: s.cs === k, cls: s.cs === k ? 'chip on' : 'chip', pick: function () { self.setState({ cs: k }); } }; });
     v.doChangeStore = function () { var l0 = self.cur(); self.patchList(l0.id, function (L) { L.store = s.cs; return L; }); self.setState({ sheet: null }); self.say('購入先を変更しました'); };
-    v.canInvite = !s.hasMom && VIEWER === 'me'; v.hasInvite = s.invite; v.noInvite = !s.invite;
+    v.canInvite = !s.hasPartner && VIEWER === 'me'; v.hasInvite = s.invite; v.noInvite = !s.invite;
     v.issueInvite = function () { self.setState({ invite: true, requests: [] }); self.say('招待リンクを発行'); };
     v.shareInvite = function () { self.say('（端末の共有画面が開きます）'); };
     v.copyInvite = function () { self.say('コピーしました'); };
     v.revokeInvite = function () { self.setState({ invite: false, requests: [] }); self.say('招待リンクを取り消しました'); };
     v.reqCount = s.requests.length; v.noReq = s.requests.length === 0;
     v.reqRows = s.requests.map(function (q, idx) { return { name: q.name, email: q.email,
-      approve: function () { self.setState({ hasMom: true, invite: false, requests: [] }); self.say(q.name + 'が参加しました'); },
+      approve: function () { self.setState({ hasPartner: true, invite: false, requests: [] }); self.say(q.name + 'が参加しました'); },
       reject: function () { self.setState({ requests: s.requests.filter(function (_, j) { return j !== idx; }) }); self.say('拒否しました'); } }; });
-    v.toggleViewer = function () { if (!s.hasMom) { self.say('花子がグループにいません'); return; } var nv = s.viewer === 'me' ? 'mom' : 'me'; self.setState({ viewer: nv, filter: nv, sheet: null, sub: null, undo: null, toast: '' }); };
+    v.toggleViewer = function () { if (!s.hasPartner) { self.say('花子がグループにいません'); return; } var nv = s.viewer === 'me' ? 'partner' : 'me'; self.setState({ viewer: nv, filter: nv, sheet: null, sub: null, undo: null, toast: '' }); };
     v.viewerBtn = s.viewer === 'me' ? '表示：自分（太郎）の端末 → 花子の端末に切替' : '表示：花子の端末 → 自分（太郎）の端末に切替'; v.viewerBtnCls = s.viewer === 'me' ? 'dbtn' : 'dbtn on';
-    v.demoRequest = function () { if (s.hasMom) { self.say('先に設定 › メンバーで花子を外してください'); return; } if (!s.invite) { self.say('先に招待リンクを発行してください'); return; } if (s.requests.length) { self.say('申請は届いています'); return; } self.setState({ requests: [{ name: '花子', email: 'hanako@example.com' }] }); self.say('参加申請が届きました'); };
+    v.demoRequest = function () { if (s.hasPartner) { self.say('先に設定 › メンバーで花子を外してください'); return; } if (!s.invite) { self.say('先に招待リンクを発行してください'); return; } if (s.requests.length) { self.say('申請は届いています'); return; } self.setState({ requests: [{ name: '花子', email: 'hanako@example.com' }] }); self.say('参加申請が届きました'); };
     v.sheetRemove = s.sheet === 'remove'; v.askRemove = function () { self.setState({ sheet: 'remove' }); };
-    v.momActiveCount = s.lists.filter(function (l) { return l.status === 'active'; }).reduce(function (n, l) { return n + l.items.filter(function (i) { return i.who === 'mom'; }).length; }, 0);
+    v.partnerActiveCount = s.lists.filter(function (l) { return l.status === 'active'; }).reduce(function (n, l) { return n + l.items.filter(function (i) { return i.who === 'partner'; }).length; }, 0);
     v.doRemove = function () { self.doRemove(); };
     v.sheetNick = s.sheet === 'nick'; v.nickDraft = s.nickDraft;
     v.openNick = function () { self.setState({ sheet: 'nick', nickDraft: NICK[VIEWER] }); };
     v.onNick = function (ev) { self.setState({ nickDraft: ev.target.value }); };
     v.onNickDirect = function (ev) { self.setState({ nick: ev.target.value }); };
-    v.saveNick = function () { var n = s.nickDraft.trim(); if (!n) return; self.setState(VIEWER === 'me' ? { nick: n, sheet: null } : { momNick: n, sheet: null }); self.say('保存しました'); };
+    v.saveNick = function () { var n = s.nickDraft.trim(); if (!n) return; self.setState(VIEWER === 'me' ? { nick: n, sheet: null } : { partnerNick: n, sheet: null }); self.say('保存しました'); };
     v.sheetLogout = s.sheet === 'logout'; v.askLogout = function () { self.setState({ sheet: 'logout' }); };
     v.doLogout = function () { self.setState({ sheet: null, sub: 'login' }); };
     v.login = function () { self.setState({ sub: null, tab: 'lists', view: 'home' }); };
@@ -1221,7 +1221,7 @@ class Component extends DCLogic {
     v.gdChecked = s.gdChecked; v.gdBoxCls = s.gdChecked ? 'sbox on' : 'sbox';
     v.gdToggle = function () { self.setState({ gdChecked: !s.gdChecked }); };
     v.gdBtnCls = s.gdChecked ? 'btn dan' : 'btn dan offl';
-    v.doGroupDelete = function () { if (!s.gdChecked) { self.say('確認にチェックを入れてください'); return; } self.setState({ sub: 'deleting' }); setTimeout(function () { STORE_ICON = {}; self.setState({ sub: 'welcome', lists: [], staples: {}, staplesStore: '', hasMom: false, invite: false, requests: [], listId: null, view: 'home', tab: 'lists', seg: 'active' }); }, 1600); };
+    v.doGroupDelete = function () { if (!s.gdChecked) { self.say('確認にチェックを入れてください'); return; } self.setState({ sub: 'deleting' }); setTimeout(function () { STORE_ICON = {}; self.setState({ sub: 'welcome', lists: [], staples: {}, staplesStore: '', hasPartner: false, invite: false, requests: [], listId: null, view: 'home', tab: 'lists', seg: 'active' }); }, 1600); };
     v.createGroup = function () { if (!s.nick.trim()) { self.say('呼び名を入力'); return; } self.setState({ sub: null, tab: 'lists', view: 'home' }); self.say('グループを作成しました'); };
     var se = s.stEdit;
     if (se) {
@@ -1241,7 +1241,7 @@ class Component extends DCLogic {
       var mine = function (i) { return s.filter === 'all' || i.who === s.filter; };
       var isActive = l.status === 'active';
       var mapI = function (i) {
-        return { rowCls: 'row' + (i.purchased ? ' done' : '') + (s.flashId === i.id ? ' flash' : ''), id: i.id, name: i.name, qty: i.qty, multi: i.qty >= 2, purchased: i.purchased, whoName: lab(i.who), initial: ini(i.who), avCls: 'av ' + (i.who === VIEWER ? 'me' : 'mom'), showWho: s.filter === 'all',
+        return { rowCls: 'row' + (i.purchased ? ' done' : '') + (s.flashId === i.id ? ' flash' : ''), id: i.id, name: i.name, qty: i.qty, multi: i.qty >= 2, purchased: i.purchased, whoName: lab(i.who), initial: ini(i.who), avCls: 'av ' + (i.who === VIEWER ? 'me' : 'partner'), showWho: s.filter === 'all',
           checkCls: i.purchased ? 'check on' : 'check', lock: !isActive,
           checkLabel: i.name + (i.qty >= 2 ? '、' + i.qty + 'つ' : '') + (i.purchased ? '、購入済み。未購入に戻す' : '、未購入。購入済みにする'),
           isPending: i.sync === 'pending', isFailed: i.sync === 'failed',
@@ -1252,9 +1252,9 @@ class Component extends DCLogic {
       var pend = l.items.filter(function (i) { return i.sync !== 'ok'; }).length;
       var cnt = function (k) { return l.items.filter(function (i) { return !i.purchased && (k === 'all' || i.who === k); }).length; };
       var LI = ic(l.store);
-      v.L = { delLabel: isActive ? 'リストを削除' : '履歴を削除', delBody: (l.items.length ? '商品' + l.items.length + '品も消えます。' : '') + (isActive && s.hasMom ? NICK[otherW()] + 'の画面からも消えます。' : '') + '元に戻せません。', icon: LI.d, iconLabel: LI.label, name: l.name, store: l.store, active: isActive, closed: !isActive, closedAt: l.closedAt || '', itemCount: l.items.length,
+      v.L = { delLabel: isActive ? 'リストを削除' : '履歴を削除', delBody: (l.items.length ? '商品' + l.items.length + '品も消えます。' : '') + (isActive && s.hasPartner ? NICK[otherW()] + 'の画面からも消えます。' : '') + '元に戻せません。', icon: LI.d, iconLabel: LI.label, name: l.name, store: l.store, active: isActive, closed: !isActive, closedAt: l.closedAt || '', itemCount: l.items.length,
         storeLine: isActive ? l.store : l.store + ' · 終了済み', currentStore: l.store };
-      v.filters = (s.hasMom ? [[VIEWER, '自分'], [otherW(), NICK[otherW()]], ['all', 'すべて']] : [[VIEWER, '自分'], ['all', 'すべて']]).map(function (p) { return { label: p[1], count: cnt(p[0]), on: s.filter === p[0], cls: s.filter === p[0] ? 'on' : '', pick: function () { self.setState({ filter: p[0] }); } }; });
+      v.filters = (s.hasPartner ? [[VIEWER, '自分'], [otherW(), NICK[otherW()]], ['all', 'すべて']] : [[VIEWER, '自分'], ['all', 'すべて']]).map(function (p) { return { label: p[1], count: cnt(p[0]), on: s.filter === p[0], cls: s.filter === p[0] ? 'on' : '', pick: function () { self.setState({ filter: p[0] }); } }; });
       v.unp = unp; v.pur = pur; v.hasPur = pur.length > 0; v.purCount = pur.length;
       var scope = l.items.filter(mine), sDone = scope.filter(function (i) { return i.purchased; }).length;
       v.hasScope = scope.length > 0; v.scopeTotal = scope.length; v.scopeDone = sDone;
@@ -1290,8 +1290,8 @@ class Component extends DCLogic {
       v.addQty = a.qty; v.qtyMin = a.qty <= 1; v.qtyMax = a.qty >= 999;
       v.qtyDec = function () { self.setAdd({ qty: Math.max(1, a.qty - 1), err: '' }); }; v.qtyInc = function () { self.setAdd({ qty: Math.min(999, a.qty + 1), err: '' }); };
       var w = ex ? ex.who : a.who; v.whoLocked = !!ex;
-      v.whoMe = w === 'me'; v.whoMom = w === 'mom'; v.whoMeCls = w === 'me' ? 'chip on' : 'chip'; v.whoMomCls = w === 'mom' ? 'chip on' : 'chip';
-      v.setWhoMe = function () { self.setAdd({ who: 'me' }); }; v.setWhoMom = function () { self.setAdd({ who: 'mom' }); };
+      v.whoMe = w === 'me'; v.whoPartner = w === 'partner'; v.whoMeCls = w === 'me' ? 'chip on' : 'chip'; v.whoPartnerCls = w === 'partner' ? 'chip on' : 'chip';
+      v.setWhoMe = function () { self.setAdd({ who: 'me' }); }; v.setWhoPartner = function () { self.setAdd({ who: 'partner' }); };
       v.mergeHint = ex ? 'リストにあり　×' + ex.qty + ' → ×' + (ex.qty + a.qty) + (ex.purchased ? '　未購入に戻る' : '') : '';
       v.mergeKeepsWho = !!ex && ex.who !== a.who; v.mergeWho = ex ? lab(ex.who) : '';
       v.addBtn = ex ? '数量を合算' : 'リストに追加'; v.addErr = a.err;
@@ -1301,11 +1301,11 @@ class Component extends DCLogic {
         var o = a.sel[nm], inL = l.items.find(function (i) { return N(i.name) === N(nm); });
         var upd = function (p) { var sel = Object.assign({}, a.sel); sel[nm] = Object.assign({}, sel[nm], p); self.setAdd({ sel: sel, err: '' }); };
         return { name: nm, on: !!o, boxCls: o ? 'sbox on' : 'sbox', inList: !!inL, inQty: inL ? inL.qty : 0,
-          qty: o ? o.qty : 1, min: !o || o.qty <= 1, me: !!o && o.who === 'me', mom: !!o && o.who === 'mom',
-          meCls: o && o.who === 'me' ? 'chip on' : 'chip', momCls: o && o.who === 'mom' ? 'chip on' : 'chip',
+          qty: o ? o.qty : 1, min: !o || o.qty <= 1, me: !!o && o.who === 'me', partner: !!o && o.who === 'partner',
+          meCls: o && o.who === 'me' ? 'chip on' : 'chip', partnerCls: o && o.who === 'partner' ? 'chip on' : 'chip',
           toggle: function () { var sel = Object.assign({}, a.sel); if (sel[nm]) delete sel[nm]; else sel[nm] = { qty: 1, who: 'me' }; self.setAdd({ sel: sel, err: '' }); },
           inc: function () { upd({ qty: Math.min(999, o.qty + 1) }); }, dec: function () { upd({ qty: Math.max(1, o.qty - 1) }); },
-          setMe: function () { upd({ who: 'me' }); }, setMom: function () { upd({ who: 'mom' }); } };
+          setMe: function () { upd({ who: 'me' }); }, setPartner: function () { upd({ who: 'partner' }); } };
       });
       var nsel = Object.keys(a.sel).length;
       v.stapleNone = nsel === 0; v.stapleBtn = nsel ? nsel + '件をリストに追加' : '商品を選んでください';
@@ -1316,8 +1316,8 @@ class Component extends DCLogic {
         v.eName = e.name; v.eOrigName = e.orig; v.onEditName = function (ev) { self.setEdit({ name: ev.target.value, err: '' }); };
         v.eQty = e.qty; v.eMin = e.qty <= 1; v.eMax = e.qty >= 999;
         v.eDec = function () { self.setEdit({ qty: Math.max(1, e.qty - 1) }); }; v.eInc = function () { self.setEdit({ qty: Math.min(999, e.qty + 1) }); };
-        v.eMe = e.who === 'me'; v.eMom = e.who === 'mom'; v.eMeCls = e.who === 'me' ? 'chip on' : 'chip'; v.eMomCls = e.who === 'mom' ? 'chip on' : 'chip';
-        v.eSetMe = function () { self.setEdit({ who: 'me' }); }; v.eSetMom = function () { self.setEdit({ who: 'mom' }); };
+        v.eMe = e.who === 'me'; v.ePartner = e.who === 'partner'; v.eMeCls = e.who === 'me' ? 'chip on' : 'chip'; v.ePartnerCls = e.who === 'partner' ? 'chip on' : 'chip';
+        v.eSetMe = function () { self.setEdit({ who: 'me' }); }; v.eSetPartner = function () { self.setEdit({ who: 'partner' }); };
         v.eWhoName = lab(e.who); v.eStatus = e.purchased ? '購入済み' : '未購入';
         v.editErr = e.err; v.confirmDel = e.confirmDel; v.noConfirm = !e.confirmDel;
         v.saveEdit = function () { self.saveEdit(); }; v.toStaple = function () { self.toStaple(); };

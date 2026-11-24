@@ -66,7 +66,7 @@ groups/{groupId}
 
 `groups`: adminUid、status(active/deleting)、memberCount、versionなど。`members`: uid、role(admin/member)、joinedAt、nickname（前後空白除去後1文字以上。上限はdomainのテストで確定。UI案は20文字）。最大2人、1ユーザー1グループを必ずサーバー側で検証する。役割はクライアント入力だけで自由変更不可。
 
-`invitations`: createdAt、expiresAt、status(active/revoked/consumed)、opaque tokenのハッシュまたは不可推測ID、利用成立時刻。`requests`: applicantUid、nickname、申請時に通知済みのGoogle由来email、requestedAt、status(pending/approved/rejected/invalidated)。期限内の申請はリンク失効後も承認可能。取り消しは申請も無効化、最初の承認1件のみ有効。**URLトークンを秘密として扱い、申請者が他人のメールを偽装・閲覧できないRules設計をPoCで検証**。Googleメールの取得方法とプロフィール変更時の扱いも検証。
+`invitations`: createdAt、expiresAt、status(active/revoked/consumed)、opaque tokenのハッシュまたは不可推測ID、利用成立時刻。`requests`: applicantUid、nickname、申請時に通知済みのGoogle由来email、requestedAt、status(pending/approved/rejected/invalidated)。期限内の申請はリンク失効後も承認可能。承認・拒否・無効の確定時に申請のemailとnicknameを削除し、statusと理由だけを残す。申請文書は申請者が結果を確認した時点か一定期間の経過後に削除する（期間はPoC-02で確定。STEP5_PLAN A3）。取り消しは申請も無効化、最初の承認1件のみ有効。**URLトークンを秘密として扱い、申請者が他人のメールを偽装・閲覧できないRules設計をPoCで検証**。Googleメールの取得方法とプロフィール変更時の扱いも検証。
 
 `stores`: name、nameKey、iconKey（12種の識別子：cart/pill/bread/fish/veg/home/tool/shirt/cafe/gift/store/book、未設定はnull＝store表示。FR-011・CM-08）。名前はtrim後1〜50文字。同一グループで重複不可。既存リスト/定番商品が参照する購入先の削除は拒否。参照存在確認をコレクション横断でRulesのみで達成できるかはPoC対象（単純なクエリ不存在チェックをRulesでできると仮定しない）。
 
@@ -163,4 +163,4 @@ PWA Service Workerは静的アセット主体とし、認証済みFirestoreレ�
 ## 13. 改訂記録
 
 - v0.9.1（2026-11-24）：STEP 2 v2.1とSTEP 4の確定事項に合わせて参照を更新した。データモデルに `members.nickname`・`requests.nickname`（CM-01）、`stores.iconKey`（CM-08）、`staples.usualQty`（CM-10）を追加し、利用中リストの削除（FR-037、RISK-09）とユースケース（UpdateNickname、DeleteList、UndoLastAdd）を追記した。グループライフサイクルのリスクをRISK-10に改番した。技術スタック・システム境界・同期の方針は変更していない。条件付き承認の扱いはv0.9のまま。
-- v0.9.2（2026-11-24）：CM-11により数量・いつもの数量を1..9に変更した。§11の追跡性をTECHNICAL_VALIDATIONの台帳に合わせ、購入先の参照・重複の検証（P01-11・12）を明記した。STEP 5準備で決めた設計上の事項は`STEP5_PLAN.md`第4章を参照。条件付き承認の扱いはv0.9のまま。
+- v0.9.2（2026-11-24）：CM-11により数量・いつもの数量を1..9に変更した。§11の追跡性をTECHNICAL_VALIDATIONの台帳に合わせ、購入先の参照・重複の検証（P01-11・12）を明記した。STEP 5準備で決めた設計上の事項は`STEP5_PLAN.md`第4章を参照（参加申請の個人データの削除時期は§4に反映）。条件付き承認の扱いはv0.9のまま。
