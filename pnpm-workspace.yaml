@@ -1,6 +1,3 @@
-# pnpm の設定（https://pnpm.io/settings）
-# 依存関係のインストール時スクリプトは、ここで許可したものだけを実行する。
 strictDepBuilds: true
 allowBuilds: {}
-# 公開から1日（1440分）たっていない版はインストールしない（既定値を明示）。
 minimumReleaseAge: 1440

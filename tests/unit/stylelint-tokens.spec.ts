@@ -4,7 +4,6 @@ import { fileURLToPath } from 'node:url'
 import stylelint from 'stylelint'
 import { describe, expect, it } from 'vitest'
 
-// UI_DESIGN 第2章：色・書体・余白は tokens.css からのみ使う。直接の色指定は stylelint で禁止する。
 const configFile = fileURLToPath(new URL('../../stylelint.config.js', import.meta.url))
 const tokensFile = fileURLToPath(new URL('../../src/shared/styles/tokens.css', import.meta.url))
 

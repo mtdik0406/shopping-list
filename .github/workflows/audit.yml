@@ -25,7 +25,5 @@ jobs:
       - uses: pnpm/setup@731dfb6463bbd11c11fd0ee11fe00ed0e36d48a1 # v3.2.0
         with:
           install: false
-      # アプリに含まれる依存関係は、深刻度を問わずすべて不合格にする
       - run: pnpm audit --prod
-      # 開発用を含む全体は、深刻度 high 以上で不合格にする
       - run: pnpm audit --audit-level=high

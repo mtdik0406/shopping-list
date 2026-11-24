@@ -1,5 +1,3 @@
-// 色は tokens.css の CSS 変数からのみ使う（UI_DESIGN 第2章「トークン」）。
-// tokens.css 以外では、16進カラー・名前付き色・色関数を禁止する。
 const colorFunctions = [
   'rgb',
   'rgba',

@@ -1,7 +1,3 @@
-<script setup lang="ts">
-// PR-1 の仮の画面。実際の画面は PR-7 以降で UI_DESIGN に従って作る。
-</script>
-
 <template>
   <main class="placeholder">
     <h1 class="placeholder__title">買い物リスト</h1>
