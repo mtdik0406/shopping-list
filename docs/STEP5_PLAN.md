@@ -1,9 +1,9 @@
 # STEP5_PLAN — 実装準備の計画と決定事項
 
 - 工程：STEP 5 — 実装（準備）
-- 版：v1.0（2026-11-24）
-- 状態：**PR-0〜PR-6（資料の配置・初期化・PoC-02・PoC-01）の着手を利用者が承認（2026-11-24）。PR-7以降はPoC結果の報告後に改めて承認を受ける。**
-- 正本：`docs/`の各文書と`tokens.css`（参照のしかたは`DEVELOPMENT_GUIDELINES.md`「文書どうしの参照」）
+- 版：v1.1（2026-11-25）
+- 状態：**PR-0〜PR-6（資料の配置・初期化・PoC-02・PoC-01）の着手を利用者が承認（2026-11-24）。文書の整理（D1〜D3）をPR-2の前に行うことを利用者が承認（2026-11-25）。PR-7以降はPoC結果の報告後に改めて承認を受ける。**
+- 正本：`PRODUCT_BRIEF.md`、`REQUIREMENTS.md`、`ACCEPTANCE_CRITERIA.md`、`ARCHITECTURE.md`、`TECHNICAL_VALIDATION.md`、`DEVELOPMENT_GUIDELINES.md`、`UI_DESIGN.md`、`tokens.css`
 
 > 本書はSTEP 5準備の計画レビュー（第1〜5章を章ごとに確認）で決めた事項の記録である。要件・受け入れ条件を変更しない。要件と食い違う場合は要件を優先する。
 
@@ -66,7 +66,7 @@ PR-0 資料の配置 → PR-1 初期化とCI → 文書の整理（D1〜D3） �
 |---|---|---|---|
 | 0 | 資料の配置、承認表記・版ずれの修正、CM-11、P01-11・12、本書 | — | レビューで承認 |
 | 1 | 初期化（Vite・Vue 3・TypeScript strict・Pinia・Vue Router・ESLint・Prettier・stylelint・Vitest）とCI | — | CIが通る |
-| D1 | 文書どうしの版番号の参照をなくす（`DEVELOPMENT_GUIDELINES.md`「文書どうしの参照」） | — | レビューで承認 |
+| D1 | 文書どうしの版番号の参照をなくす（`DEVELOPMENT_GUIDELINES.md`「文書の参照と改訂」） | — | レビューで承認 |
 | D2 | 同じ事実を書く文書を1つにまとめ、他の文書はIDで参照する | — | 要件の内容が変わらないことをレビューで確認 |
 | D3 | CIの文書検査（参照するIDの実在、他の文書の版番号） | — | CIが通る |
 | 2 | Emulator基盤（すべて拒否するRules）、Playwrightの土台 | — | CIでEmulatorが動く |
@@ -89,6 +89,8 @@ PR-0 資料の配置 → PR-1 初期化とCI → 文書の整理（D1〜D3） �
 | 19 | PWA化（manifest・Service Worker） | NFR-001、AC-N01 | 実機確認 |
 | 20 | 空・失敗表示の総点検、E2E一式、PoC-05 | FR-035、AC-25、AC-N04・N05 | E2E |
 
+D1〜D3は文書だけの整理で、番号はPR-0〜20と別の識別子とする。
+
 AC-N02・N07はPoC-03（実機）、AC-N03はPoC-02〜04（RISK-07）で確認する。
 
 ### 5.4 画面を作る順番
@@ -107,3 +109,8 @@ tokens.css → 共通部品 → 買い物画面 → リスト一覧・作成 →
 - アプリ名・manifestの値（PR-19までに決める）。
 - Storybook・Figmaは導入する方針（PRODUCT_BRIEF第4章）だが、最初の構成には含めない。Storybookは共通部品（PR-7）の後に導入を提案する。Figmaの使い方は後で決める。見た目と振る舞いの正は引き続き`UI_DESIGN.md`と`tokens.css`とする。
 - タスクはGitHub Issueでも管理する。承認済みの範囲（PR-1〜PR-6）だけをIssueにし、マイルストーン「PoC」にまとめる。PR-7以降はPoC結果の報告後に追加する。
+
+## 改訂記録
+
+- v1.0（2026-11-24）：初版。
+- v1.1（2026-11-25）：文書の整理（D1〜D3）をPR-2の前に加えた（利用者承認）。
