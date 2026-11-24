@@ -4,7 +4,7 @@
 - 版：v1.0.2（STEP 4 最終承認版 v1.0 の参照更新・CM-11の反映。第13章）
 - 確定日：2026-11-23
 - 状態：**STEP 4 最終承認済み（2026-11-23）。STEP 5はPoC（PR-0〜PR-6）の着手のみ承認済み（2026-11-24）。**
-- 正本：`PRODUCT_BRIEF.md` v1.2、`REQUIREMENTS.md` v2.2、`ACCEPTANCE_CRITERIA.md` v2.2、`ARCHITECTURE.md` v0.9.2、`TECHNICAL_VALIDATION.md` v0.9.2、`DEVELOPMENT_GUIDELINES.md` v0.9.2（STEP 4作成時の参照はREQUIREMENTS・ACCEPTANCE_CRITERIA v2.0）
+- 正本：`PRODUCT_BRIEF.md`、`REQUIREMENTS.md`、`ACCEPTANCE_CRITERIA.md`、`ARCHITECTURE.md`、`TECHNICAL_VALIDATION.md`、`DEVELOPMENT_GUIDELINES.md`（STEP 4作成時の参照はREQUIREMENTS・ACCEPTANCE_CRITERIA v2.0）
 - 付属：`tokens.css`（デザイントークン）、Designキャンバス「買い物リストPWA STEP4 UI/UX」（操作できるプロトタイプほか5ボード）
 
 > 本書はUIの振る舞いと見た目の基準であり、実装開始の承認ではない。見た目と動きの正はキャンバスの「操作できるプロトタイプ」と本書。両者が食い違う場合は本書と`tokens.css`を優先する（プロトタイプはCM-11より前のもので、数量の上限は999のまま）。プロトタイプのHTMLは移植せず、Vueコンポーネントとして作り直す。プロトタイプの操作パネル（通信の切替・相手の端末・画面幅）はアプリに含めない。要件と食い違う場合は要件を優先する。ただし第9章で承認済みの変更管理（CM）は、STEP 2文書へ反映すべき確定事項として扱う。
