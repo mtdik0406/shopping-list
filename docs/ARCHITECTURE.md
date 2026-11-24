@@ -146,7 +146,7 @@ PWA Service Workerは静的アセット主体とし、認証済みFirestoreレ�
 | AC-01〜25 / AC-N01〜N07 | TECHNICAL_VALIDATION.md | 全項目は実装後受入。PoCで代表的な高リスクシナリオを先行検証 |
 
 - 「リスト商品から定番登録」はSTEP 2でFR-036として正式化済み。STEP 4の変更管理（CM-01〜03・08〜10）はREQUIREMENTS/ACCEPTANCE_CRITERIA v2.1に反映済み（2026-11-24承認）。CM-11（数量1〜9）はv2.2に反映。
-- RISK台帳はREQUIREMENTS v2.1の第7章（RISK-01〜10）が正。STEP 3で識別したグループライフサイクル（Web SDK+Rulesの成立性）は、REQUIREMENTSのRISK-08（定番の同時更新）と番号が衝突していたためRISK-10に改番した。
+- RISKの定義はREQUIREMENTS v2.2の第7章（RISK-01〜10）、RISKとPoCの対応は`TECHNICAL_VALIDATION.md`のRISK台帳が正。STEP 3で識別したグループライフサイクル（Web SDK+Rulesの成立性）は、REQUIREMENTSのRISK-08（定番の同時更新）と番号が衝突していたためRISK-10に改番した。
 - 主要リスク・代替案・再承認条件は`TECHNICAL_VALIDATION.md`とADRに記録。
 
 ## 12. 公式資料（確認日: 2026-11-23）

@@ -86,7 +86,7 @@ PR-0 資料の配置 → PR-1 初期化とCI → PR-2 Emulator基盤 → PR-3 Do
 | 19 | PWA化（manifest・Service Worker） | NFR-001、AC-N01 | 実機確認 |
 | 20 | 空・失敗表示の総点検、E2E一式、PoC-05 | FR-035、AC-25、AC-N04・N05 | E2E |
 
-AC-N02・N03・N07はPoC-03（実機）で確認する。
+AC-N02・N07はPoC-03（実機）、AC-N03はPoC-02〜04（RISK-07）で確認する。
 
 ### 5.4 画面を作る順番
 
