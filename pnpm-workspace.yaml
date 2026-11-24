@@ -1,0 +1,3 @@
+strictDepBuilds: true
+allowBuilds: {}
+minimumReleaseAge: 1440

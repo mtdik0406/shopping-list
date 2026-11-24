@@ -1,0 +1,6 @@
+# 承認済みの文書と引き継ぎ版のトークンは整形しない
+docs/
+src/shared/styles/tokens.css
+dist/
+coverage/
+pnpm-lock.yaml

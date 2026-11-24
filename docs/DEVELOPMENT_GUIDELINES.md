@@ -1,6 +1,6 @@
 # DEVELOPMENT_GUIDELINES — Claude Code 実装引継ぎ
 
-- 工程: STEP 3 / v0.9.2（v0.9条件付き承認に、REQUIREMENTS/AC v2.2・STEP 4 UI_DESIGNを反映）/ 2026-11-24
+- 工程: STEP 3 / v0.9.3（v0.9条件付き承認に、REQUIREMENTS/AC v2.2・STEP 4 UI_DESIGNを反映）/ 2026-11-24
 - 本書は実装時の方針であり、実装開始（STEP 5）の承認そのものではない。
 
 ## リポジトリ推奨構成
@@ -32,12 +32,12 @@ firebase.json
 
 ## CI 必須の確認
 
-1. `npm ci` による再現性のある依存インストール
+1. pnpm による再現性のある依存インストール（`pnpm-lock.yaml` どおり。依存関係のインストール時スクリプトは許可したものだけ、公開から1日未満の版は入れない）
 2. ESLint / Prettier --check / `tsc --noEmit` / stylelint（`tokens.css` 以外での色の直接指定を禁止）
 3. Vitest（ドメイン、アプリケーション）
 4. Firebase Emulator Suite + Rulesの許可/拒否テスト
 5. Vite build、PWA manifest検査
-6. gitleaks、Dependabot、GitHub Actionsの権限最小化
+6. gitleaks、Dependabot、GitHub Actionsの権限最小化、`pnpm audit`（PRごとと毎週。pnpm 12のlockfileではDependabotのセキュリティアラートが出ないため）
 7. Playwrightの代表的利用フロー（Emulator上、画面幅320・375・414px）。実機試験は別ゲート。
 
 ## テスト戦略
@@ -64,3 +64,4 @@ firebase.json
 
 - v0.9.1（2026-11-24）：推奨構成に `docs/` の文書一覧・`tokens.css`・プロトタイプのソースを追加し、AGENTS.mdを外した（エージェントへの指示は正本と最初の指示で与える）。CIにstylelint（色の直接指定禁止）と画面幅を追加し、テスト戦略にSTEP 4の確定事項を追加した。最初の指示テンプレートを実装工程向けに更新した。
 - v0.9.2（2026-11-24）：CM-11により単体テストの数量境界を1/9に変更した。`STEP5_PLAN.md`を文書一覧と最初の指示テンプレートに加え（参照する版も更新）、公開リポジトリでの個人情報の扱いを追記した。
+- v0.9.3（2026-11-24）：パッケージ管理をnpmからpnpmに変更した（利用者承認）。CIの依存インストールを`pnpm-lock.yaml`どおりのインストールに、脆弱性の検査を`pnpm audit`に改めた。
