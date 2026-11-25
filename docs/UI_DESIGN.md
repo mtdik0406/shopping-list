@@ -47,7 +47,7 @@
 | S-03 | 招待リンクから参加申請 | /join/:token | FR-005 |
 | S-04 | 承認待ち／申請が無効 | /join/pending | FR-005/006 |
 | S-10 | 買い物リスト（利用中／履歴） | /lists?tab=active\|closed | FR-016/026 |
-| S-11 | リストを作成 | BottomSheet | FR-016 |
+| S-11 | リストを作成 | BottomSheet | FR-011・016 |
 | S-12 | 買い物画面 | /lists/:id?who=self\|partner\|all | FR-015,018〜025,029〜034 |
 | S-13 | 定番の候補（入力欄のパネル） | QuickAddBar内 | FR-015 |
 | S-14 | 商品の編集／終了済み商品の定番登録 | BottomSheet | FR-018,022,036 |
@@ -64,7 +64,7 @@
 | S-33 | グループ削除（確認→削除中→はじめに） | /settings/group/delete | FR-008 |
 | S-34 | アカウント削除（前提の案内） | /settings/account/delete | FR-009 |
 | S-35 | グループから外れました | /removed | FR-007, NFR-003 |
-| S-36 | 呼び名・ログアウト・データの取り扱い | Sheet・Dialog・/settings/data | FR-002/005 |
+| S-36 | 呼び名・ログアウト・データの取り扱い | Sheet・Dialog・/settings/data | FR-002/005/009、NFR-006 |
 
 ### 3.3 起動時の振り分け
 

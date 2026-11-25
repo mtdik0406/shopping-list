@@ -66,7 +66,7 @@ PR-0 資料の配置 → PR-1 初期化とCI → 文書の整理（D1〜D3） �
 |---|---|---|---|
 | 0 | 資料の配置、承認表記・版ずれの修正、CM-11、P01-11・12、本書 | — | レビューで承認 |
 | 1 | 初期化（Vite・Vue 3・TypeScript strict・Pinia・Vue Router・ESLint・Prettier・stylelint・Vitest）とCI | — | CIが通る |
-| D1 | 文書どうしの版番号の参照をなくす（`DEVELOPMENT_GUIDELINES.md`「文書の参照と改訂」） | — | レビューで承認 |
+| D1 | 文書どうしの版番号の参照をなくす（`DEVELOPMENT_GUIDELINES.md`「文書の書き方と改訂」） | — | レビューで承認 |
 | D2 | 同じ事実を書く文書を1つにまとめ、他の文書はIDで参照する | — | 要件の内容が変わらないことをレビューで確認 |
 | D3 | CIの文書検査（参照するIDの実在、他の文書の版番号） | — | CIが通る |
 | 2 | Emulator基盤（すべて拒否するRules）、Playwrightの土台 | — | CIでEmulatorが動く |
