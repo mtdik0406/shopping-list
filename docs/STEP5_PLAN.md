@@ -66,7 +66,7 @@ PR-0 資料の配置 → PR-1 初期化とCI → 文書の整理（D1〜D3） �
 |---|---|---|---|
 | 0 | 資料の配置、承認表記・版ずれの修正、CM-11、P01-11・12、本書 | — | レビューで承認 |
 | 1 | 初期化（Vite・Vue 3・TypeScript strict・Pinia・Vue Router・ESLint・Prettier・stylelint・Vitest）とCI | — | CIが通る |
-| D1 | 文書どうしの版番号の参照をなくす（`DEVELOPMENT_GUIDELINES.md`「文書の参照と改訂」） | — | レビューで承認 |
+| D1 | 文書どうしの版番号の参照をなくす（`DEVELOPMENT_GUIDELINES.md`「文書の書き方と改訂」） | — | レビューで承認 |
 | D2 | 同じ事実を書く文書を1つにまとめ、他の文書はIDで参照する | — | 要件の内容が変わらないことをレビューで確認 |
 | D3 | CIの文書検査（参照するIDの実在、他の文書の版番号） | — | CIが通る |
 | 2 | Emulator基盤（すべて拒否するRules）、Playwrightの土台 | — | CIでEmulatorが動く |
@@ -101,7 +101,7 @@ tokens.css → 共通部品 → 買い物画面 → リスト一覧・作成 →
 
 - 端末：iPhone（Safari、ホーム画面に追加したPWA）、Android（Chrome、インストールしたPWA）。OS・ブラウザの版は確認時に記録する。
 - 開発用Firebaseプロジェクト（Spark）は利用者が作成する。Hostingへのデプロイは毎回確認する。
-- 確認項目：`UI_DESIGN.md`第11章、`TECHNICAL_VALIDATION.md` PoC-03、P02-08。結果は`TECHNICAL_VALIDATION.md`の様式で記録する。
+- 確認項目：`UI_DESIGN.md`第10章、`TECHNICAL_VALIDATION.md` PoC-03、P02-08。結果は`TECHNICAL_VALIDATION.md`の様式で記録する。
 - 最後に家族に「牛乳を2本追加」「自分の担当をチェック」「買い物を終える」を試してもらい、迷った点を記録して改善する。
 
 ## 6. 未決事項
