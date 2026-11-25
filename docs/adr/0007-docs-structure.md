@@ -1,0 +1,37 @@
+# 0007. 文書の分担と構成
+
+- 状態：承認
+- 日付：2026-11-25
+- 関連：ADR 0001
+
+## 背景
+
+同じ事実が複数の文書に書かれ、変更のたびに複数の文書を直す必要があった。
+
+## 決定
+
+- 1つの事実は1つの文書にだけ書き、他の文書は ID（FR・AC・RISK・PoC・S-xx など）で参照する。
+- 分担：
+  - 値・範囲：要件（`REQUIREMENTS.md`）
+  - 確かめ方：受け入れ条件（`ACCEPTANCE_CRITERIA.md`）
+  - 画面・文言：UI 設計（`UI_DESIGN.md`）
+  - 実現方法：アーキテクチャ（`ARCHITECTURE.md`）
+  - RISK と PoC の対応・検証結果：技術検証（`TECHNICAL_VALIDATION.md`）
+  - 開発の進め方・承認ゲート：開発ガイドライン（`DEVELOPMENT_GUIDELINES.md`）
+  - 要件の範囲内での設計判断：ADR
+  - 作業の単位と検討中の事項：GitHub Issue（検討中はラベル「検討中」）
+- 版番号は各文書の冒頭にだけ書く。
+- 次の構成に改める（Issue #14）：`docs/README.md`（文書の地図と、どの事実をどこに書くか）、`product.md`・`requirements.md`・`acceptance.md`・`architecture.md`・`ui.md`・`validation.md`・`development.md`、`adr/`、`ui-prototype/`。
+- CI で、参照している ID の実在と、他の文書の版番号を書いていないことを検査する（Issue #15）。
+
+## 根拠
+
+- 事実の置き場所を1つにすれば、変更時に直す箇所が1つになり、文書どうしの食い違いが起きにくい。
+
+## 影響
+
+- 文書の改名で、他の文書・Issue・コードのコメントからの参照を直す必要がある。
+
+## 見直し条件
+
+- 分担のどれにも当てはまらない事実が繰り返し出てきたとき。
