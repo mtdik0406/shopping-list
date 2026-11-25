@@ -1,6 +1,6 @@
 # DEVELOPMENT_GUIDELINES — Claude Code 実装引継ぎ
 
-- 版: v0.9.4
+- 版: v0.9.5
 
 ## リポジトリ推奨構成
 
@@ -12,7 +12,7 @@ src/
   shared/{components,firebase,utils,styles}/   # styles/tokens.css はデザイントークンの正本
   main.ts
 tests/{unit,integration,security-rules,e2e}/
-docs/{PRODUCT_BRIEF,REQUIREMENTS,ACCEPTANCE_CRITERIA,ARCHITECTURE,TECHNICAL_VALIDATION,DEVELOPMENT_GUIDELINES,UI_DESIGN,CHANGE_REQUESTS_STEP2,STEP5_PLAN}.md
+docs/{PRODUCT_BRIEF,REQUIREMENTS,ACCEPTANCE_CRITERIA,ARCHITECTURE,TECHNICAL_VALIDATION,DEVELOPMENT_GUIDELINES,UI_DESIGN}.md
 docs/ui-prototype/Main.dc.html   # 操作できるプロトタイプのソース（参照用）
 docs/adr/
 firestore.rules
@@ -22,9 +22,18 @@ firebase.json
 
 小規模MVPを優先し、featureに不要なフォルダを予め大量作成しない。Domain層の純粋関数にはFirebase SDKを入れない。Applicationでユースケースを調停し、Repositoryインターフェース越しにFirestoreへアクセス。Piniaはローカル画面状態を保持するがサーバー正本の二重管理を避ける。UIの見た目・振る舞い・文言は `docs/UI_DESIGN.md` と `tokens.css` に従い、プロトタイプのHTMLは移植せずVueで作り直す。
 
+## 承認ゲート
+
+- 安全性・整合性に関わる機能は、対応するPoCがPASSするか、代替方式を人が承認するまで完成扱いにしない。Emulatorの結果だけでRISKを閉じない。
+- 次は必ず利用者の承認を受ける：Blaze移行、Cloud Billingのリンク、Cloud Functionsの導入、要件・受け入れ条件・UI設計の変更・緩和・延期、Security Rulesの権限拡大、個人データ保持の拡大、30日以内消去目標の扱いの変更、PoCがFAILしたときの代替設計。
+- 次は実行前に確認する：GitHubのリポジトリ設定の変更（承認済みのブランチ保護を除く）、Firebaseプロジェクトの作成・設定、Hostingへのデプロイ、本番環境の操作、元に戻せない削除。
+- 画面の実装（PR-7以降）は、PoC結果の報告後に改めて利用者の承認を受けてから着手する。
+- 開発用Firebaseプロジェクト（Spark）は利用者が作成する。Hostingへのデプロイは毎回確認する。
+
 ## Pull Request運用
 
-- main直コミット禁止、feature branch→PR→CI→レビュー→Squash merge。
+- main直コミット禁止、feature branch→PR→CI→レビュー→Squash merge。mergeは利用者が行う。
+- 作業はGitHub IssueとマイルストーンでPRの単位に管理し、PRは`Closes #n`でIssueと結ぶ。検討中の事項はラベル「検討中」のIssueで扱い、決まったらADRか該当する文書に書く。
 - commit: `feat: 商品の数量合算を追加`、`fix: 終了後の購入チェックを拒否` のようにtype+日本語。
 - 重要な設計変更はADRに「背景/選択肢/決定/根拠/影響/見直し条件」を記録。
 - AIエージェントには `docs/` の正本（PRODUCT_BRIEF、REQUIREMENTS、ACCEPTANCE_CRITERIA、ARCHITECTURE、TECHNICAL_VALIDATION、UI_DESIGN、本書）を明示する。要件変更・課金プラン変更・Security Rulesの権限拡大・個人データ保持の拡大を無断で行わせない。
@@ -66,4 +75,4 @@ firebase.json
 
 ## Claude Codeへの最初の指示テンプレート
 
-> `docs/` の正本（`PRODUCT_BRIEF.md`、`REQUIREMENTS.md`、`ACCEPTANCE_CRITERIA.md`、`ARCHITECTURE.md`、`TECHNICAL_VALIDATION.md`、本書、`UI_DESIGN.md`、`STEP5_PLAN.md`）を読み、未検証事項（RISK-01〜10、PoC-01〜05）と承認ゲートを要約する。PoC対象の最小検証計画を実行単位に分解し、承認済みMVP要件を変更せず、Security Rules/トランザクション/削除/オフラインの成立条件を優先して確認する。BlazeやCloud Functionsの導入は独断で行わない。計画の承認前に実装を始めない。
+> `docs/` の正本（`PRODUCT_BRIEF.md`、`REQUIREMENTS.md`、`ACCEPTANCE_CRITERIA.md`、`ARCHITECTURE.md`、`TECHNICAL_VALIDATION.md`、本書、`UI_DESIGN.md`、`adr/`）を読み、未検証事項（RISK-01〜10、PoC-01〜05）と承認ゲートを要約する。PoC対象の最小検証計画を実行単位に分解し、承認済みMVP要件を変更せず、Security Rules/トランザクション/削除/オフラインの成立条件を優先して確認する。BlazeやCloud Functionsの導入は独断で行わない。計画の承認前に実装を始めない。

@@ -1,6 +1,6 @@
 # 家族共有型・買い物リストPWA — ARCHITECTURE
 
-- 版: v0.9.2
+- 版: v0.9.3
 - 状態: **PoC未実施。実装可能性を保証しない**
 - 正本: `PRODUCT_BRIEF.md`、`REQUIREMENTS.md`、`ACCEPTANCE_CRITERIA.md`。UIは`UI_DESIGN.md`・`tokens.css`
 - 要件優先順位: 承認済み業務要件 > 本設計案。相違が生じた場合、要件を勝手に変更せず承認ゲートへ戻す。
@@ -62,9 +62,9 @@ groups/{groupId}
 
 `users`: uid、currentGroupId(nullまたは1件)、accountStatus、createdAt。呼び名（FR-002/005）は相手に表示するため `members/{uid}.nickname` に保持し、`users` には複製しない案を第一候補とする（アカウント削除時の消去対象）。グループの管理者UID、メンバー集合はgroup側に記録。二重管理する際は一つのトランザクションで変更しRulesで前後関係を検証。**正本の所属表現およびRulesのアクセス呼出し回数はPoCで確定**。
 
-`groups`: adminUid、status(active/deleting)、memberCount、versionなど。`members`: uid、role(admin/member)、joinedAt、nickname（前後空白除去後1文字以上。上限はdomainのテストで確定。UI案は20文字）。最大2人、1ユーザー1グループを必ずサーバー側で検証する。役割はクライアント入力だけで自由変更不可。
+`groups`: adminUid、status(active/deleting)、memberCount、versionなど。`members`: uid、role(admin/member)、joinedAt、nickname（前後空白除去後1〜20文字。ADR 0002 A1）。最大2人、1ユーザー1グループを必ずサーバー側で検証する。役割はクライアント入力だけで自由変更不可。
 
-`invitations`: createdAt、expiresAt、status(active/revoked/consumed)、opaque tokenのハッシュまたは不可推測ID、利用成立時刻。`requests`: applicantUid、nickname、申請時に通知済みのGoogle由来email、requestedAt、status(pending/approved/rejected/invalidated)。期限内の申請はリンク失効後も承認可能。承認・拒否・無効の確定時に申請のemailとnicknameを削除し、statusと理由だけを残す。申請文書は申請者が結果を確認した時点か一定期間の経過後に削除する（期間はPoC-02で確定。STEP5_PLAN A3）。取り消しは申請も無効化、最初の承認1件のみ有効。**URLトークンを秘密として扱い、申請者が他人のメールを偽装・閲覧できないRules設計をPoCで検証**。Googleメールの取得方法とプロフィール変更時の扱いも検証。
+`invitations`: createdAt、expiresAt、status(active/revoked/consumed)、opaque tokenのハッシュまたは不可推測ID、利用成立時刻。`requests`: applicantUid、nickname、申請時に通知済みのGoogle由来email、requestedAt、status(pending/approved/rejected/invalidated)。期限内の申請はリンク失効後も承認可能。承認・拒否・無効の確定時に申請のemailとnicknameを削除し、statusと理由だけを残す。申請文書は申請者が結果を確認した時点か一定期間の経過後に削除する（期間はPoC-02で確定。ADR 0002 A3）。取り消しは申請も無効化、最初の承認1件のみ有効。**URLトークンを秘密として扱い、申請者が他人のメールを偽装・閲覧できないRules設計をPoCで検証**。Googleメールの取得方法とプロフィール変更時の扱いも検証。
 
 `stores`: name、nameKey、iconKey（12種の識別子：cart/pill/bread/fish/veg/home/tool/shirt/cafe/gift/store/book、未設定はnull＝store表示。FR-011）。名前はtrim後1〜50文字。同一グループで重複不可。既存リスト/定番商品が参照する購入先の削除は拒否。参照存在確認をコレクション横断でRulesのみで達成できるかはPoC対象（単純なクエリ不存在チェックをRulesでできると仮定しない）。
 
@@ -145,7 +145,7 @@ PWA Service Workerは静的アセット主体とし、認証済みFirestoreレ�
 
 - RISKの定義はREQUIREMENTSの第7章（RISK-01〜10）、RISKとPoCの対応は`TECHNICAL_VALIDATION.md`のRISK台帳が正。
 - 主要リスク・代替案・再承認条件は`TECHNICAL_VALIDATION.md`とADRに記録。
-- 要件の範囲内で具体化した設計上の決定（A1〜A10）は`STEP5_PLAN.md`第4章。
+- 要件の範囲内で具体化した設計上の決定（A1〜A10）は`adr/0002-spec-details-within-requirements.md`。
 
 ## 12. 公式資料（確認日: 2026-11-23）
 
