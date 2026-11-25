@@ -8,6 +8,11 @@
 
 AI エージェントで開発するため、MCP サーバーやプラグインを入れると作業は速くなるが、エージェントが本番の Firebase を操作したり、外部へ情報を送ったりする経路も増える。
 
+## 選択肢
+
+- Firebase の MCP サーバー・公式プラグイン
+- Playwright MCP、Chrome DevTools MCP、typescript-lsp、GitHub MCP
+
 ## 決定
 
 - 今は何も入れない。

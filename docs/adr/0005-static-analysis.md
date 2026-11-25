@@ -8,6 +8,10 @@
 
 CI の lint・型検査・gitleaks・`pnpm audit` に加えて、どの静的解析を入れるかを決める。
 
+## 選択肢
+
+下の表の道具を比べた。
+
 ## 決定
 
 | 道具 | 扱い |
@@ -19,13 +23,12 @@ CI の lint・型検査・gitleaks・`pnpm audit` に加えて、どの静的解
 
 ## 根拠
 
-- 道具は、対象のコードができる段階（PR）に合わせて入れる。
-- CodeQL の default setup はリポジトリの設定だけで使える。
+- 判断の理由は記録していない。
 
 ## 影響
 
-- PR-3・PR-7 の完了条件に、それぞれの道具を CI に加えることを含める。
+- knip は PR-3、eslint-plugin-vuejs-accessibility は PR-7 で CI に加える。
 
 ## 見直し条件
 
-- GitHub Actions のワークフローが増え、設定の誤りを CodeQL（actions）だけでは見つけにくくなったとき。
+- 入れなかった道具でしか見つからない問題が起きたとき。
