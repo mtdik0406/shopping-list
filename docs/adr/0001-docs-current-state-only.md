@@ -22,7 +22,7 @@
 - 未検証の事項は、検証結果を記録するまで未検証と明示し続ける。
 - 要件・受け入れ条件などのID（FR・NFR・AC・RISK・PoC・S-xxなど）は変えない。
 
-整理前の基準は、コミット `ff16431`（文書どうしの版番号の参照をなくした時点）とする。その時点の各文書の版と承認状態は次のとおり。経緯の詳細はそのコミットの各文書の改訂記録・承認記録と、`CHANGE_REQUESTS_STEP2.md`・`STEP5_PLAN.md` を参照する。
+整理前の基準は、コミット `ff16431`（文書どうしの版番号の参照をなくした時点）とする。その時点の各文書の版と承認状態は次のとおり。経緯の詳細は、そのコミットの各文書の改訂記録・承認記録と、`CHANGE_REQUESTS_STEP2.md`・`STEP5_PLAN.md`（いずれも同コミットにあり、現在は廃止）を参照する。
 
 | 文書 | 版 | 承認状態 |
 |---|---|---|
@@ -45,7 +45,7 @@
 ## 影響
 
 - `DEVELOPMENT_GUIDELINES.md`「文書の書き方と改訂」にこの規則を書く。
-- `CHANGE_REQUESTS_STEP2.md` と `STEP5_PLAN.md` は、含まれる決定をADRとIssueへ移したうえで廃止する。
+- `CHANGE_REQUESTS_STEP2.md` と `STEP5_PLAN.md` は、含まれる決定を他の文書・ADR・Issueへ移して廃止した（承認ゲートは`DEVELOPMENT_GUIDELINES.md`、PoCの実施方法は`TECHNICAL_VALIDATION.md`、設計上の決定はADR 0002）。
 
 ## 見直し条件
 

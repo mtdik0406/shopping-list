@@ -13,8 +13,6 @@
 | `docs/TECHNICAL_VALIDATION.md`   | 技術検証計画（PoC-01〜05、すべて未実施）                                             |
 | `docs/DEVELOPMENT_GUIDELINES.md` | 開発ガイドライン                                                                     |
 | `docs/UI_DESIGN.md`              | UI/UX設計                                                                            |
-| `docs/CHANGE_REQUESTS_STEP2.md`  | 変更管理（CM）の一覧                                                                 |
-| `docs/STEP5_PLAN.md`             | 実装準備の計画と決定事項                                                             |
 | `docs/adr/`                      | 設計判断の記録                                                                       |
 | `docs/ui-prototype/Main.dc.html` | 操作できるプロトタイプのソース（挙動・文言の参照用。単体のブラウザでは表示できない） |
 | `src/shared/styles/tokens.css`   | デザイントークン                                                                     |
