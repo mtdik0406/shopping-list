@@ -101,7 +101,7 @@ tokens.css → 共通部品 → 買い物画面 → リスト一覧・作成 →
 
 - 端末：iPhone（Safari、ホーム画面に追加したPWA）、Android（Chrome、インストールしたPWA）。OS・ブラウザの版は確認時に記録する。
 - 開発用Firebaseプロジェクト（Spark）は利用者が作成する。Hostingへのデプロイは毎回確認する。
-- 確認項目：`UI_DESIGN.md`第11章、`TECHNICAL_VALIDATION.md` PoC-03、P02-08。結果は`TECHNICAL_VALIDATION.md`の様式で記録する。
+- 確認項目：`UI_DESIGN.md`第10章、`TECHNICAL_VALIDATION.md` PoC-03、P02-08。結果は`TECHNICAL_VALIDATION.md`の様式で記録する。
 - 最後に家族に「牛乳を2本追加」「自分の担当をチェック」「買い物を終える」を試してもらい、迷った点を記録して改善する。
 
 ## 6. 未決事項

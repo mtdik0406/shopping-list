@@ -1,9 +1,7 @@
 # 家族共有型・買い物リストPWA — ARCHITECTURE
 
-- 工程: STEP 3 技術選定・アーキテクチャ設計
-- 版: v0.9.2（条件付き最終承認版 v0.9 に、STEP 2 v2.2・STEP 4・STEP 5準備の確定事項を反映。第13章参照）
-- 日付: 2026-11-23
-- 状態: **条件付き承認。PoC未実施、実装可能性を保証しない**
+- 版: v0.9.2
+- 状態: **PoC未実施。実装可能性を保証しない**
 - 正本: `PRODUCT_BRIEF.md`、`REQUIREMENTS.md`、`ACCEPTANCE_CRITERIA.md`。UIは`UI_DESIGN.md`・`tokens.css`
 - 要件優先順位: 承認済み業務要件 > 本設計案。相違が生じた場合、要件を勝手に変更せず承認ゲートへ戻す。
 
@@ -11,7 +9,7 @@
 
 MVP（Googleログイン、2人グループ、招待承認、購入先、定番商品、買い物リスト、購入チェック、履歴・引継ぎ、オフライン同期）をClaude Codeで実装するための技術上の指針。Vue 3/TypeScript/Firebaseを維持し、早期完成、運用費原則0円、保守性、セキュリティを優先。UI詳細設計・アプリ実装は対象外。
 
-**条件付き承認の意味**: 本書の候補構成および検証方針は承認された。RISK-01〜10の重要な不確定点は解決・合格していない。安全性や整合性を伴う本番実装・一般公開について、検証結果なしに承認済みとみなさない。Sparkで成立しない場合、Blaze移行や業務要件変更を自動的に行わず再承認を受ける。
+**本書の位置づけ**: 本書は候補構成と検証方針を定める。RISK-01〜10の重要な不確定点は解決・合格していない。安全性や整合性を伴う本番実装・一般公開について、検証結果なしに承認済みとみなさない。Sparkで成立しない場合、Blaze移行や業務要件変更を自動的に行わず再承認を受ける。
 
 ## 2. 技術スタック
 
@@ -28,7 +26,7 @@ MVP（Googleログイン、2人グループ、招待承認、購入先、定番�
 | デプロイ | Firebase Hosting | Sparkの範囲から開始 |
 | テスト | Vitest, Vue Test Utils, Playwright, Firebase Emulator Suite | 実機試験併用 |
 | CI | GitHub Actions | lint、format、typecheck、test、rules、build、secret scan |
-| UI定義 | `UI_DESIGN.md`・`tokens.css`（STEP 4で確定） | Storybook / Figmaは任意。アイコンは lucide-vue-next |
+| UI定義 | `UI_DESIGN.md`・`tokens.css` | Storybook / Figmaは任意。アイコンは lucide-vue-next |
 | APIサーバー | 原則なし | 特権処理が要件を満たさなければ再設計・再承認 |
 
 外部依存の正確なバージョンは、実装開始時にサポート状況と互換性を再確認して固定する。開発/検証と本番のFirebaseプロジェクトを分離する。
@@ -62,15 +60,15 @@ groups/{groupId}
     items/{itemId}
 ```
 
-`users`: uid、currentGroupId(nullまたは1件)、accountStatus、createdAt。呼び名（FR-002/005、CM-01）は相手に表示するため `members/{uid}.nickname` に保持し、`users` には複製しない案を第一候補とする（アカウント削除時の消去対象）。グループの管理者UID、メンバー集合はgroup側に記録。二重管理する際は一つのトランザクションで変更しRulesで前後関係を検証。**正本の所属表現およびRulesのアクセス呼出し回数はPoCで確定**。
+`users`: uid、currentGroupId(nullまたは1件)、accountStatus、createdAt。呼び名（FR-002/005）は相手に表示するため `members/{uid}.nickname` に保持し、`users` には複製しない案を第一候補とする（アカウント削除時の消去対象）。グループの管理者UID、メンバー集合はgroup側に記録。二重管理する際は一つのトランザクションで変更しRulesで前後関係を検証。**正本の所属表現およびRulesのアクセス呼出し回数はPoCで確定**。
 
 `groups`: adminUid、status(active/deleting)、memberCount、versionなど。`members`: uid、role(admin/member)、joinedAt、nickname（前後空白除去後1文字以上。上限はdomainのテストで確定。UI案は20文字）。最大2人、1ユーザー1グループを必ずサーバー側で検証する。役割はクライアント入力だけで自由変更不可。
 
 `invitations`: createdAt、expiresAt、status(active/revoked/consumed)、opaque tokenのハッシュまたは不可推測ID、利用成立時刻。`requests`: applicantUid、nickname、申請時に通知済みのGoogle由来email、requestedAt、status(pending/approved/rejected/invalidated)。期限内の申請はリンク失効後も承認可能。承認・拒否・無効の確定時に申請のemailとnicknameを削除し、statusと理由だけを残す。申請文書は申請者が結果を確認した時点か一定期間の経過後に削除する（期間はPoC-02で確定。STEP5_PLAN A3）。取り消しは申請も無効化、最初の承認1件のみ有効。**URLトークンを秘密として扱い、申請者が他人のメールを偽装・閲覧できないRules設計をPoCで検証**。Googleメールの取得方法とプロフィール変更時の扱いも検証。
 
-`stores`: name、nameKey、iconKey（12種の識別子：cart/pill/bread/fish/veg/home/tool/shirt/cafe/gift/store/book、未設定はnull＝store表示。FR-011・CM-08）。名前はtrim後1〜50文字。同一グループで重複不可。既存リスト/定番商品が参照する購入先の削除は拒否。参照存在確認をコレクション横断でRulesのみで達成できるかはPoC対象（単純なクエリ不存在チェックをRulesでできると仮定しない）。
+`stores`: name、nameKey、iconKey（12種の識別子：cart/pill/bread/fish/veg/home/tool/shirt/cafe/gift/store/book、未設定はnull＝store表示。FR-011）。名前はtrim後1〜50文字。同一グループで重複不可。既存リスト/定番商品が参照する購入先の削除は拒否。参照存在確認をコレクション横断でRulesのみで達成できるかはPoC対象（単純なクエリ不存在チェックをRulesでできると仮定しない）。
 
-`staples`: storeId、name、nameKey、usualQty（1..9、既定1。FR-013・CM-10・CM-11）。担当者は持たない。購入先ごとに定番を選択しリストへ追加でき（追加時の数量の初期値＝usualQty）、元の定番変更・削除は既存リスト商品に波及しない。リストの商品からの定番登録（FR-036）はusualQty=1で作成する。
+`staples`: storeId、name、nameKey、usualQty（1..9、既定1。FR-013）。担当者は持たない。購入先ごとに定番を選択しリストへ追加でき（追加時の数量の初期値＝usualQty）、元の定番変更・削除は既存リスト商品に波及しない。リストの商品からの定番登録（FR-036）はusualQty=1で作成する。
 
 `lists`: name、storeId、status(active/closed)、storeNameAtClose、closedAt、createdAt、updatedAt、revision。複数active可。オンライン終了のみ。終了時に参照購入先名を固定し、終了後の変更を全経路で拒否。履歴は手動削除まで保持、再開不可。利用中リストも手動削除できる（FR-037）。削除後に届いた書き込みはRulesで拒否し、クライアントは未反映として通知する（RISK-09）。削除時はitemsの残存に注意。購入予定日はリスト名の初期値の生成にのみ使い、保存しない。
 
@@ -80,7 +78,7 @@ groups/{groupId}
 
 ### 入力規則
 
-- 商品/定番の名称: trim後1〜100文字。購入先/リスト名: trim後1〜50文字。数量: 整数1〜9（CM-11）。
+- 商品/定番の名称: trim後1〜100文字。購入先/リスト名: trim後1〜50文字。数量: 整数1〜9。
 - 重複用 `nameKey`: NFKC正規化＋大文字小文字の同一視を基礎候補。前後空白、Unicode空白種、コードポイント/書記素単位での文字数、ケースフォールディング非一致例をテストで明文化する。業務要件「全角/半角・大文字/小文字を同一視」を満たさない場合は変更。
 - 購入先名の重複は承認済みの「前後空白除去後の比較」に従い、商品のUnicode同一視規則を購入先へ自動適用しない。
 - すべての権限・値域・更新禁止条件をサーバーで検証する。競合時はクライアントの成功表示を確定まで延期、楽観更新は未確定と表示する。
@@ -90,7 +88,7 @@ groups/{groupId}
 - SignIn / SignOut / DeleteAccount
 - CreateGroup / IssueInvitation / RequestJoin / ReviewJoinRequest / LeaveOrRemoveMember / DeleteGroup
 - ManageStore（iconKeyを含む） / ManageStaple（usualQtyを含む） / AddListItemFromStaple / SaveListItemAsStaple（FR-036）
-- UpdateNickname（CM-01）
+- UpdateNickname
 - CreateList / ChangeListStore / AddOrMergeItem / RenameItem / ChangeAssignee / TogglePurchased / CloseList / DeleteList（利用中・終了済み、FR-026/037） / CarryOverSelectedUnpurchasedItems / UndoLastAdd（直前の追加・合算の取り消し。同時操作との整合はPoC-01で確認し、成立しなければ範囲を狭める）
 - ObserveSharedList / QueueOfflineToggle / RetrySync / ResolveRejectedSync
 
@@ -145,9 +143,9 @@ PWA Service Workerは静的アセット主体とし、認証済みFirestoreレ�
 | NFR-001〜007 | §7,9,10 | PoC-03,04,05 |
 | AC-01〜25 / AC-N01〜N07 | TECHNICAL_VALIDATION.md | 全項目は実装後受入。PoCで代表的な高リスクシナリオを先行検証 |
 
-- 「リスト商品から定番登録」はSTEP 2でFR-036として正式化済み。STEP 4の変更管理（CM-01〜03・08〜10、2026-11-24承認）とCM-11（数量1〜9）は`REQUIREMENTS.md`・`ACCEPTANCE_CRITERIA.md`に反映済み（`CHANGE_REQUESTS_STEP2.md`参照）。
-- RISKの定義はREQUIREMENTSの第7章（RISK-01〜10）、RISKとPoCの対応は`TECHNICAL_VALIDATION.md`のRISK台帳が正。STEP 3で識別したグループライフサイクル（Web SDK+Rulesの成立性）は、REQUIREMENTSのRISK-08（定番の同時更新）と番号が衝突していたためRISK-10に改番した。
+- RISKの定義はREQUIREMENTSの第7章（RISK-01〜10）、RISKとPoCの対応は`TECHNICAL_VALIDATION.md`のRISK台帳が正。
 - 主要リスク・代替案・再承認条件は`TECHNICAL_VALIDATION.md`とADRに記録。
+- 要件の範囲内で具体化した設計上の決定（A1〜A10）は`STEP5_PLAN.md`第4章。
 
 ## 12. 公式資料（確認日: 2026-11-23）
 
@@ -159,8 +157,3 @@ PWA Service Workerは静的アセット主体とし、認証済みFirestoreレ�
 - Google login redirect: https://firebase.google.com/docs/auth/web/redirect-best-practices
 - Firebase pricing: https://firebase.google.com/pricing
 - Spark/Blaze: https://firebase.google.com/docs/projects/billing/firebase-pricing-plans
-
-## 13. 改訂記録
-
-- v0.9.1（2026-11-24）：STEP 2 v2.1とSTEP 4の確定事項に合わせて参照を更新した。データモデルに `members.nickname`・`requests.nickname`（CM-01）、`stores.iconKey`（CM-08）、`staples.usualQty`（CM-10）を追加し、利用中リストの削除（FR-037、RISK-09）とユースケース（UpdateNickname、DeleteList、UndoLastAdd）を追記した。グループライフサイクルのリスクをRISK-10に改番した。技術スタック・システム境界・同期の方針は変更していない。条件付き承認の扱いはv0.9のまま。
-- v0.9.2（2026-11-24）：CM-11により数量・いつもの数量を1..9に変更した。§11の追跡性をTECHNICAL_VALIDATIONの台帳に合わせ、購入先の参照・重複の検証（P01-11・12）を明記した。STEP 5準備で決めた設計上の事項は`STEP5_PLAN.md`第4章を参照（参加申請の個人データの削除時期は§4に反映）。条件付き承認の扱いはv0.9のまま。
